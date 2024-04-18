@@ -514,6 +514,14 @@ p4 <- plot_onlyone(all_burst_freq_mean, "All_Genes", "mel", 0, 7.2, "Burst Frequ
 p5 <- plot_onlyone(all_burst_freq_mean, "All_Genes", "yak", 0, 2.5, "Burst Frequency", "Burst Frequency in D. yakuba", TRUE)
 p6 <- plot_onlyone(all_burst_freq_mean, "All_Genes", "ana", 0, 6, "Burst Frequency", "Burst Frequency in D. ananassae", TRUE)
 
+p1 <- p1 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+p2 <- p2 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+p3 <- p3 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+p4 <- p4 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+p5 <- p5 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+p6 <- p6 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+
+
 grid.arrange(p1, p4, p2, p5, p3, p6, ncol=2)
 
 dev.off()
@@ -707,9 +715,16 @@ plot_neigh <- function(dat_1, dat_2, lab_1, lab_2, lab_spec, y_low, y_high, y_si
 
 plot_neigh_mult <- function(data_1, data_2_list, label_1, label_2_vec, label_species, y_lbound, y_hbound, y_sig, y_locaN, label_y, label_main, bool_fix_ana, pv_mat, mtx_nvals_1, n_vals_ref){
 	neigh_L2 <- plot_neigh(data_1, data_2_list[[1]], label_1, label_2_vec[1], label_species, y_lbound, y_hbound, y_sig, y_locaN, label_y, label_main[1], bool_fix_ana, pv_mat[1,], mtx_nvals_1[1,], n_vals_ref)
+	neigh_L2 <- neigh_L2 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	
 	neigh_L1 <- plot_neigh(data_1, data_2_list[[2]], label_1, label_2_vec[2], label_species, y_lbound, y_hbound, y_sig, y_locaN, label_y, label_main[2], bool_fix_ana, pv_mat[2,], mtx_nvals_1[2,], n_vals_ref)
+	neigh_L1 <- neigh_L1 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	
 	neigh_R1 <- plot_neigh(data_1, data_2_list[[3]], label_1, label_2_vec[3], label_species, y_lbound, y_hbound, y_sig, y_locaN, label_y, label_main[3], bool_fix_ana, pv_mat[3,], mtx_nvals_1[3,], n_vals_ref)
+	neigh_R1 <- neigh_R1 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	
 	neigh_R2 <- plot_neigh(data_1, data_2_list[[4]], label_1, label_2_vec[1], label_species, y_lbound, y_hbound, y_sig, y_locaN, label_y, label_main[4], bool_fix_ana, pv_mat[4,], mtx_nvals_1[4,], n_vals_ref)
+	neigh_R2 <- neigh_R2 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
 
 	return(list(neigh_L2, neigh_L1, neigh_R1, neigh_R2))
 }
@@ -802,8 +817,14 @@ dev.off()
 
 svg("sc_liftoff/bursting/comb_sigs_dens.svg", width=4*3, height=4*3, pointsize=3)
 p1 <- ggplot(p_m_l1_es, aes(x=vals, fill=sourc)) + geom_density(alpha=0.4, outline.type = "full", adjust=1/2, n=2^13) + scale_x_continuous(limits=c(0,575)) + coord_cartesian(xlim=c(0, 70))
+p1 <- p1 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+
 p2 <- ggplot(p_y_l1_es, aes(x=vals, fill=sourc)) + geom_density(alpha=0.4, outline.type = "full", adjust=1/2, n=2^13) + scale_x_continuous(limits=c(0,575)) + coord_cartesian(xlim=c(0, 35))
+p2 <- p2 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+
 p3 <- ggplot(p_y_l1_ls, aes(x=vals, fill=sourc)) + geom_density(alpha=0.4, outline.type = "full", adjust=1/2, n=2^13) + scale_x_continuous(limits=c(0,575)) + coord_cartesian(xlim=c(0, 15))
+p3 <- p3 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+
 grid.arrange(p1, p2, p3, ncol=1)
 dev.off()
 
@@ -946,11 +967,21 @@ png("sc_liftoff/bursting/comb_xa_all_stats.png", width=2400*3.5*3.90/2, height=2
 p_xa_size_mel_stat <- plot_neigh(autosome_burst_size_mean, x_burst_size_mean, "Autosomal", "X_linked", "mel", -11*32/75, 32, -2.5*32/75, -11*32/75, "Burst Size", "Burst Size in D. melanogaster, X:A", TRUE, mtx_size_pval_xa[1,], mtx_size_N_xa[1,], mtx_size_Nref_xa[1,])
 p_xa_freq_mel_stat <- plot_neigh(autosome_burst_freq_mean, x_burst_freq_mean, "Autosomal", "X_linked", "mel", -11*7.2/75, 7.2, -2.5*7.2/75, -11*7.2/75, "Burst Frequency", "Burst Frequency in D. melanogaster, X:A", TRUE, mtx_freq_pval_xa[1,], mtx_freq_N_xa[1,], mtx_freq_Nref_xa[1,])
 
+p_xa_size_mel_stat <- p_xa_size_mel_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+p_xa_freq_mel_stat <- p_xa_freq_mel_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+
 p_xa_size_yak_stat <- plot_neigh(autosome_burst_size_mean, x_burst_size_mean, "Autosomal", "X_linked", "yak", -11*85/75, 85, -2.5*85/75, -11*85/75, "Burst Size", "Burst Size in D. yakuba, X:A", TRUE, mtx_size_pval_xa[2,], mtx_size_N_xa[2,], mtx_size_Nref_xa[2,])
 p_xa_freq_yak_stat <- plot_neigh(autosome_burst_freq_mean, x_burst_freq_mean, "Autosomal", "X_linked", "yak", -11*2.5/75, 2.5, -2.5*2.5/75, -11*2.5/75, "Burst Frequency", "Burst Frequency in D. yakuba, X:A", TRUE, mtx_freq_pval_xa[2,], mtx_freq_N_xa[2,], mtx_freq_Nref_xa[2,])
 
+p_xa_size_yak_stat <- p_xa_size_yak_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+p_xa_freq_yak_stat <- p_xa_freq_yak_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+
 p_xa_size_ana_stat <- plot_neigh(autosome_burst_size_mean, x_burst_size_mean, "Autosomal", "X_linked", "ana", -11*6/75+1.15, 6, -2.5*6/75+1.05, -11*6/75+1.15, "Burst Size", "Burst Size in D. ananassae, X:A", TRUE, mtx_size_pval_xa[3,], mtx_size_N_xa[3,], mtx_size_Nref_xa[3,])
 p_xa_freq_ana_stat <- plot_neigh(autosome_burst_freq_mean, x_burst_freq_mean, "Autosomal", "X_linked", "ana", -11*6/75, 6, -2.5*6/75, -11*6/75, "Burst Frequency", "Burst Frequency in D. ananassae, X:A", TRUE, mtx_freq_pval_xa[3,], mtx_freq_N_xa[3,], mtx_freq_Nref_xa[3,])
+
+p_xa_size_ana_stat <- p_xa_size_ana_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+p_xa_freq_ana_stat <- p_xa_freq_ana_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+
 
 grid.arrange(p_xa_size_mel_stat, p_xa_freq_mel_stat, p_xa_size_yak_stat, p_xa_freq_yak_stat, p_xa_size_ana_stat, p_xa_freq_ana_stat, ncol=2)
 
@@ -958,7 +989,11 @@ dev.off()
 
 svg("sc_liftoff/bursting/comb_xa_all_stats.svg", width=27.3, height=12, pointsize=3)
 
+
+
 grid.arrange(p_xa_size_mel_stat, p_xa_freq_mel_stat, p_xa_size_yak_stat, p_xa_freq_yak_stat, p_xa_size_ana_stat, p_xa_freq_ana_stat, ncol=2)
+
+
 
 dev.off()
 
@@ -1014,10 +1049,13 @@ df_N_ana <- data.frame(ena, src1, ceetee1)
 png("sc_liftoff/bursting/N_boxes.png", width=2400*4, height=3600*1.5, res=600, pointsize=3)
 
 p1 <- ggplot(df_N_mel, aes(x=ceetee, y=nm, fill=src), outlier.shape = NA) + geom_bar(position="dodge", stat="identity", color="black") + ylab("N") + xlab("Cell Type") + ggtitle("melanogaster")
+p1 <- p1 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
 
 p2 <- ggplot(df_N_yak, aes(x=ceetee, y=ny, fill=src), outlier.shape = NA) + geom_bar(position="dodge", stat="identity", color="black") + ylab("N") + xlab("Cell Type") + ggtitle("yakuba")
+p2 <- p2 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
 
 p3 <- ggplot(df_N_ana, aes(x=ceetee1, y=ena, fill=src1), outlier.shape = NA) + geom_bar(position="dodge", stat="identity", color="black") + ylab("N") + xlab("Cell Type") + ggtitle("ananassae")
+p3 <- p3 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
 
 grid.arrange(p1, p2, p3, ncol=1)
 

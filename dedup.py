@@ -1,6 +1,7 @@
 import xml.etree.cElementTree as ET
 import hashlib as hash
 import copy
+import sys
 
 def get_attr(obj,attr):
     try:
@@ -79,7 +80,7 @@ def ungroup_singles(group):
 hashlist=[] 
 count=0 
 ET.register_namespace("","http://www.w3.org/2000/svg")
-tree = ET.parse('comb_freq_all_mel.svg')
+tree = ET.parse(sys.argv[1])
 root = tree.getroot()
 rtag= root.tag.split('}')[0]+'}'
 iter_groups(root)
@@ -93,4 +94,4 @@ lcount=1
     # if count==0 or lcount>10:
         # break
 
-tree.write('comb_freq_all_mel_opt.svg',encoding="us-ascii", xml_declaration=True, default_namespace="", method="xml")
+tree.write(sys.argv[2],encoding="us-ascii", xml_declaration=True, default_namespace="", method="xml")
