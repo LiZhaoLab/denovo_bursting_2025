@@ -1,0 +1,13 @@
+#!/usr/bin/bash
+
+echo "transcript" > /ru-auth/local/home/ulee/scratch_store/analysis/liftoff_features.txt
+echo "exon" >> /ru-auth/local/home/ulee/scratch_store/analysis/liftoff_features.txt
+echo "CDS" >> /ru-auth/local/home/ulee/scratch_store/analysis/liftoff_features.txt
+echo "start_codon" >> /ru-auth/local/home/ulee/scratch_store/analysis/liftoff_features.txt
+echo "stop_codon" >> /ru-auth/local/home/ulee/scratch_store/analysis/liftoff_features.txt
+
+apptainer exec --no-home --cleanenv --bind /lustre/fs4/zhao_lab/scratch/ulee/:/home /ru-auth/local/home/ulee/scratch_store/docka/liftoff.sif liftoff -polish -f /home/analysis/liftoff_features.txt -g /home/analysis/comb_gr_nochr.gtf -o /home/analysis/comb_gr_nochr_liftoff_sim.gff -u /home/analysis/comb_gr_nochr_liftoff_sim_unmap.txt -dir /home/analysis/int_sim /home/genomes/dsim-all-chromosome-r2.02.fasta /home/genomes/dmel-all-chromosome-r6.15.fasta 
+apptainer exec --no-home --cleanenv --bind /lustre/fs4/zhao_lab/scratch/ulee/:/home /ru-auth/local/home/ulee/scratch_store/docka/liftoff.sif liftoff -polish -f /home/analysis/liftoff_features.txt -g /home/analysis/comb_gr_nochr.gtf -o /home/analysis/comb_gr_nochr_liftoff_sec.gff -u /home/analysis/comb_gr_nochr_liftoff_sec_unmap.txt -dir /home/analysis/int_sec /home/genomes/dsec-all-chromosome-r1.3.fasta /home/genomes/dmel-all-chromosome-r6.15.fasta 
+apptainer exec --no-home --cleanenv --bind /lustre/fs4/zhao_lab/scratch/ulee/:/home /ru-auth/local/home/ulee/scratch_store/docka/liftoff.sif liftoff -polish -f /home/analysis/liftoff_features.txt -g /home/analysis/comb_gr_nochr.gtf -o /home/analysis/comb_gr_nochr_liftoff_yak.gff -u /home/analysis/comb_gr_nochr_liftoff_yak_unmap.txt -dir /home/analysis/int_yak /home/genomes/dyak-all-chromosome-r1.3.fasta /home/genomes/dmel-all-chromosome-r6.15.fasta 
+apptainer exec --no-home --cleanenv --bind /lustre/fs4/zhao_lab/scratch/ulee/:/home /ru-auth/local/home/ulee/scratch_store/docka/liftoff.sif liftoff -polish -f /home/analysis/liftoff_features.txt -g /home/analysis/comb_gr_nochr.gtf -o /home/analysis/comb_gr_nochr_liftoff_ere.gff -u /home/analysis/comb_gr_nochr_liftoff_ere_unmap.txt -dir /home/analysis/int_ere /home/genomes/dere-all-chromosome-r1.3.fasta /home/genomes/dmel-all-chromosome-r6.15.fasta 
+apptainer exec --no-home --cleanenv --bind /lustre/fs4/zhao_lab/scratch/ulee/:/home /ru-auth/local/home/ulee/scratch_store/docka/liftoff.sif liftoff -polish -f /home/analysis/liftoff_features.txt -g /home/analysis/comb_gr_nochr.gtf -o /home/analysis/comb_gr_nochr_liftoff_ana.gff -u /home/analysis/comb_gr_nochr_liftoff_ana_unmap.txt -dir /home/analysis/int_ana /home/genomes/dana-all-chromosome-r1.3.fasta /home/genomes/dmel-all-chromosome-r6.15.fasta 
