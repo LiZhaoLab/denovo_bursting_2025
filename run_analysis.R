@@ -709,7 +709,7 @@ plot_neigh_mult <- function(data_1, data_2_list, label_1, label_2_vec, label_spe
 	neigh_L2 <- plot_neigh(data_1, data_2_list[[1]], label_1, label_2_vec[1], label_species, y_lbound, y_hbound, y_sig, y_locaN, label_y, label_main[1], bool_fix_ana, pv_mat[1,], mtx_nvals_1[1,], n_vals_ref)
 	neigh_L1 <- plot_neigh(data_1, data_2_list[[2]], label_1, label_2_vec[2], label_species, y_lbound, y_hbound, y_sig, y_locaN, label_y, label_main[2], bool_fix_ana, pv_mat[2,], mtx_nvals_1[2,], n_vals_ref)
 	neigh_R1 <- plot_neigh(data_1, data_2_list[[3]], label_1, label_2_vec[3], label_species, y_lbound, y_hbound, y_sig, y_locaN, label_y, label_main[3], bool_fix_ana, pv_mat[3,], mtx_nvals_1[3,], n_vals_ref)
-	neigh_R2 <- plot_neigh(data_1, data_2_list[[4]], label_1, label_2_vec[1], label_species, y_lbound, y_hbound, y_sig, y_locaN, label_y, label_main[1], bool_fix_ana, pv_mat[4,], mtx_nvals_1[4,], n_vals_ref)
+	neigh_R2 <- plot_neigh(data_1, data_2_list[[4]], label_1, label_2_vec[1], label_species, y_lbound, y_hbound, y_sig, y_locaN, label_y, label_main[4], bool_fix_ana, pv_mat[4,], mtx_nvals_1[4,], n_vals_ref)
 
 	return(list(neigh_L2, neigh_L1, neigh_R1, neigh_R2))
 }
@@ -726,8 +726,18 @@ grid.arrange(p_size_mel_list[[1]], p_size_mel_list[[2]], p_size_mel_list[[3]], p
 
 dev.off()
 
-svg("sc_liftoff/bursting/comb_size_all.svg", width=7*3.5*3.90, width=54.6, height=12, pointsize=3)
-grid.arrange(p_size_mel_list[[1]], p_size_mel_list[[2]], p_size_mel_list[[3]], p_size_mel_list[[4]], p_size_yak_list[[1]], p_size_yak_list[[2]], p_size_yak_list[[3]], p_size_yak_list[[4]], p_size_ana_list[[1]], p_size_ana_list[[2]], p_size_ana_list[[3]], p_size_ana_list[[4]], ncol=4)
+svg("sc_liftoff/bursting/comb_size_all_mel.svg", width=4*3.5*3.90, height=4*1, pointsize=3)
+grid.arrange(p_size_mel_list[[1]], p_size_mel_list[[2]], p_size_mel_list[[3]], p_size_mel_list[[4]], ncol=4)
+
+dev.off()
+
+svg("sc_liftoff/bursting/comb_size_all_yak.svg", width=4*3.5*3.90, height=4*1, pointsize=3)
+grid.arrange(p_size_yak_list[[1]], p_size_yak_list[[2]], p_size_yak_list[[3]], p_size_yak_list[[4]], ncol=4)
+
+dev.off()
+
+svg("sc_liftoff/bursting/comb_size_all_ana.svg", width=4*3.5*3.90, height=4*1, pointsize=3)
+grid.arrange(p_size_ana_list[[1]], p_size_ana_list[[2]], p_size_ana_list[[3]], p_size_ana_list[[4]], ncol=4)
 
 dev.off()
 
@@ -744,11 +754,24 @@ grid.arrange(p_freq_mel_list[[1]], p_freq_mel_list[[2]], p_freq_mel_list[[3]], p
 
 dev.off()
 
-svg("sc_liftoff/bursting/comb_freq_all.svg", width=54.6, height=12, pointsize=3)
-grid.arrange(p_freq_mel_L2, p_freq_mel_L1, p_freq_mel_R1, p_freq_mel_R2, p_freq_yak_L2, p_freq_yak_L1, p_freq_yak_R1, p_freq_yak_R2, p_freq_ana_L2, p_freq_ana_L1, p_freq_ana_R1, p_freq_ana_R2, ncol=4)
+
+svg("sc_liftoff/bursting/comb_freq_all_mel.svg", width=4*3.5*3.90, height=4*1, pointsize=3)
+grid.arrange(p_freq_mel_list[[1]], p_freq_mel_list[[2]], p_freq_mel_list[[3]], p_freq_mel_list[[4]], ncol=4)
 
 dev.off()
 
+svg("sc_liftoff/bursting/comb_freq_all_yak.svg", width=4*3.5*3.90, height=4*1, pointsize=3)
+grid.arrange(p_freq_yak_list[[1]], p_freq_yak_list[[2]], p_freq_yak_list[[3]], p_freq_yak_list[[4]], ncol=4)
+
+dev.off()
+
+svg("sc_liftoff/bursting/comb_freq_all_ana.svg", width=4*3.5*3.90, height=4*1, pointsize=3)
+grid.arrange(p_freq_ana_list[[1]], p_freq_ana_list[[2]], p_freq_ana_list[[3]], p_freq_ana_list[[4]], ncol=4)
+
+dev.off()
+
+#run dedup.py
+#run svgo on all svgs
 
 extract_paired <- function(in1, in2, spec_label, ct_label){
 	this_df <- format_df(in1, in2, "a", "b")
@@ -1106,3 +1129,5 @@ dev.off()
 
 
 save(list=ls(), file="sc_liftoff/bursting/wrkspce.rdata")
+
+# svgo -f raw_svg/ -o raw_svg_svgo

@@ -125,6 +125,7 @@ n_genes <- 9999
 n_cell_per_spec <- 900
 
 gene_labs <- unlist(lapply(1:n_genes, function(x) paste("gene_", x, sep="")))
+cell_labs <- unlist(lapply(1:(n_cell_per_spec * length(species)), function(x) paste("cell_", x, sep="")))
 
 n_types <- length(cell_types)
 n_cell_per_type <- n_cell_per_spec/n_types
@@ -154,14 +155,14 @@ exp_mat_all <- lapply(1:nrow(ref_mat_sp), function(x){
 	})
 
 exp_mat_all <- do.call("rbind", exp_mat_all)
-colnames(exp_mat_all) <- colnames(ref_mat_sp)
+colnames(exp_mat_all) <- cell_labs
 rownames(exp_mat_all) <- rownames(ref_mat_sp)	
 
 
 
 
 ref_mat_noise <- matrix(sample(c(high_exprs, low_exprs), nrow(ref_mat_sp)*ncol(ref_mat_sp), replace=T), nrow=nrow(ref_mat_sp))
-colnames(ref_mat_noise) <- colnames(ref_mat_sp)
+colnames(ref_mat_noise) <- cell_labs
 rownames(ref_mat_noise) <- rownames(ref_mat_sp)
 
 exp_mat_cor <- lapply(1:nrow(exp_mat_all), function(x){
@@ -261,7 +262,7 @@ png("sim_heat_comb.png", width=1200, height=1200, res=300, pointsize=5)
 heatmap(exp_mat_all, Rowv=NA, Colv=NA)
 dev.off()
 
-png("sim_heat_cor.png", width=1200, height=1200, res=300, pointsize=5)
+png("sim_heat_cor.png", width=7, height=7, res=1200, units="in", pointsize=5)
 heatmap(exp_mat_cor, Rowv=NA, Colv=NA)
 dev.off()
 
@@ -339,21 +340,15 @@ dev.off()
 
 
 
-
-svg("sim_heat_sp.svg", width=4, height=4, pointsize=5)
-heatmap(ref_mat_sp, Rowv=NA, Colv=NA)
-dev.off()
-
-svg("sim_heat_ct.svg", width=4, height=4, pointsize=5)
-heatmap(ref_mat_ct, Rowv=NA, Colv=NA)
-dev.off()
-
-svg("sim_heat_comb.svg", width=4, height=4, pointsize=5)
-heatmap(exp_mat_all, Rowv=NA, Colv=NA)
-dev.off()
+# png("test.png")
+# exp_mat_cor_df <- expand.grid(rowz=rownames(exp_mat_cor), colz=colnames(exp_mat_cor))
+# exp_mat_cor_df$vals <- as.numeric(exp_mat_cor)
+# ggplot(exp_mat_cor_df, aes(rowz, colz, fill=vals)) + geom_tile()
+# dev.off()
 
 svg("sim_heat_cor.svg", width=4, height=4, pointsize=5)
-heatmap(exp_mat_cor, Rowv=NA, Colv=NA)
+#no render
+
 dev.off()
 
 svg("sim_umap_sp.svg", width=4, height=4, pointsize=5)
@@ -366,10 +361,6 @@ plot_cells(sim_dat_ct, color_cells_by="species_lab", group_cells_by="species_lab
 	ggtitle("Simulated Data (Cell Type)")
 dev.off()
 
-svg("sim_umap_comb.svg", width=4, height=4, pointsize=5)
-plot_cells(sim_dat_comb, color_cells_by="species_lab", group_cells_by="species_lab", group_label_size = 3, label_cell_groups = F) +
-	ggtitle("Simulated Data, All Genes")
-dev.off()
 
 svg("sim_umap_cor.svg", width=4, height=4, pointsize=5)
 plot_cells(sim_dat_cor, color_cells_by="species_lab", group_cells_by="species_lab", group_label_size = 3, label_cell_groups = F) +
