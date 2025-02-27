@@ -398,8 +398,8 @@ dev.off()
 
 #cluster analysis
 n_reclu <- 10
-reclu_lab_fine <- c("Late spermatocyte", "Early spermatocyte I", "Early spermatid II", "Early spermatocyte II", "Early spermatid I", "Late spermatogonia", "Somatic", "Late spermatid", "ananassae spermatid", "GSC/Early spermatogonia")
-reclu_lab_coarse <- c("Late spermatocyte", "Early spermatocyte", "Early spermatid", "Early spermatocyte", "Early spermatid", "Late spermatogonia", "Somatic", "Late spermatid", "ananassae spermatid", "GSC/Early spermatogonia") 
+reclu_lab_fine <- c("Late spermatocyte", "Early spermatocyte I", "Early spermatid II", "Early spermatocyte II", "Early spermatid I", "Late spermatogonia", "Somatic", "Late spermatid", "ananassae spermatocyte", "GSC/Early spermatogonia")
+reclu_lab_coarse <- c("Late spermatocyte", "Early spermatocyte", "Early spermatid", "Early spermatocyte", "Early spermatid", "Late spermatogonia", "Somatic", "Late spermatid", "ananassae spermatocyte", "GSC/Early spermatogonia") 
 
 reclu_fine <- as.character(clu_umap)
 reclu_coarse <- as.character(clu_umap)
@@ -514,26 +514,26 @@ top_specific_marker_ids_proc <- unique(top_specific_markers_proc %>% pull(gene_i
 
 png("sc_liftoff/markers_comb_genelist.png", width=1200*3, height=1200*1.75, res=300)
 p <- plot_genes_by_group(cds_comb_diffgene, top_specific_marker_ids_diffgene, group_cells_by="reclu_coarse", ordering_type="maximal_on_diag", max.size=10)
-p$data$Group <- factor(p$data$Group, levels=c("Somatic", "GSC/Early spermatogonia", "Late spermatogonia", "Early spermatocyte", "Late spermatocyte", "Early spermatid",  "Late spermatid", "ananassae spermatid"))
+p$data$Group <- factor(p$data$Group, levels=c("Somatic", "GSC/Early spermatogonia", "Late spermatogonia", "ananassae spermatocyte", "Early spermatocyte", "Late spermatocyte", "Early spermatid",  "Late spermatid"))
 p
 dev.off()
 
 png("sc_liftoff/markers_comb_all.png", width=1200*3, height=1200*1.75, res=300)
 p <- plot_genes_by_group(cds_comb_proc, top_specific_marker_ids_proc, group_cells_by="reclu_coarse", ordering_type="maximal_on_diag", max.size=10)
-p$data$Group <- factor(p$data$Group, levels=c("Somatic", "GSC/Early spermatogonia", "Late spermatogonia", "Early spermatocyte", "Late spermatocyte", "Early spermatid",  "Late spermatid", "ananassae spermatid"))
+p$data$Group <- factor(p$data$Group, levels=c("Somatic", "GSC/Early spermatogonia", "Late spermatogonia", "ananassae spermatocyte", "Early spermatocyte", "Late spermatocyte", "Early spermatid",  "Late spermatid"))
 p
 dev.off()
 
 
 svg("sc_liftoff/markers_comb_genelist.svg", width=4*3, height=4*1.75)
 p <- plot_genes_by_group(cds_comb_diffgene, top_specific_marker_ids_diffgene, group_cells_by="reclu_coarse", ordering_type="maximal_on_diag", max.size=10)
-p$data$Group <- factor(p$data$Group, levels=c("Somatic", "GSC/Early spermatogonia", "Late spermatogonia", "Early spermatocyte", "Late spermatocyte", "Early spermatid",  "Late spermatid", "ananassae spermatid"))
+p$data$Group <- factor(p$data$Group, levels=c("Somatic", "GSC/Early spermatogonia", "Late spermatogonia", "ananassae spermatocyte", "Early spermatocyte", "Late spermatocyte", "Early spermatid",  "Late spermatid"))
 p
 dev.off()
 
 svg("sc_liftoff/markers_comb_all.svg", width=4*3, height=4*1.75)
 p <- plot_genes_by_group(cds_comb_proc, top_specific_marker_ids_proc, group_cells_by="reclu_coarse", ordering_type="maximal_on_diag", max.size=10)
-p$data$Group <- factor(p$data$Group, levels=c("Somatic", "GSC/Early spermatogonia", "Late spermatogonia", "Early spermatocyte", "Late spermatocyte", "Early spermatid",  "Late spermatid", "ananassae spermatid"))
+p$data$Group <- factor(p$data$Group, levels=c("Somatic", "GSC/Early spermatogonia", "Late spermatogonia", "ananassae spermatocyte", "Early spermatocyte", "Late spermatocyte", "Early spermatid",  "Late spermatid"))
 p
 dev.off()
 
@@ -541,14 +541,14 @@ dev.off()
 # png("sc_liftoff/markers_comb_genelist_vln.png", width=1200*2.25, height=1200*2.25, res=300)
 # p <- plot_genes_violin(cds_comb_diffgene[top_specific_marker_ids_diffgene,], group_cells_by="reclu_coarse", ncol=2) +
       # theme(axis.text.x=element_text(angle=45, hjust=1))
-# p$data$Group <- factor(p$data$Group, levels=c("Somatic", "GSC/Early spermatogonia", "Late spermatogonia", "Early spermatocyte", "Late spermatocyte", "Early spermatid",  "Late spermatid", "ananassae spermatid"))
+# p$data$Group <- factor(p$data$Group, levels=c("Somatic", "GSC/Early spermatogonia", "Late spermatogonia", "Early spermatocyte", "Late spermatocyte", "Early spermatid",  "Late spermatid", "ananassae spermatocyte"))
 # p
 # dev.off()
 
 # png("sc_liftoff/markers_comb_all_vln.png", width=1200*2.25, height=1200*2.25, res=300)
 # p <- plot_genes_violin(cds_comb_proc[top_specific_marker_ids_proc,], group_cells_by="reclu_coarse", ncol=2) +
       # theme(axis.text.x=element_text(angle=45, hjust=1))
-# p$data$Group <- factor(p$data$Group, levels=c("Somatic", "GSC/Early spermatogonia", "Late spermatogonia", "Early spermatocyte", "Late spermatocyte", "Early spermatid",  "Late spermatid", "ananassae spermatid"))
+# p$data$Group <- factor(p$data$Group, levels=c("Somatic", "GSC/Early spermatogonia", "Late spermatogonia", "Early spermatocyte", "Late spermatocyte", "Early spermatid",  "Late spermatid", "ananassae spermatocyte"))
 # p
 # dev.off()
 
@@ -570,7 +570,7 @@ for(i in levels(as.factor(reclu_lab_coarse))){
 
 write.csv(colData(cds_comb_diffgene)[,c("spec", "known_type", "reclu_fine", "reclu_coarse")], file="sc_liftoff/ct_assignments.csv")
 
-save(list=ls(), file="wrkspce_run_integrated.rdata")
+save(list=ls(), file="sc_liftoff/wrkspce_run_integrated.rdata")
 
 #analyze txburst
 
@@ -587,10 +587,239 @@ dev.off()
 #use old umap and full data from cds_comb_proc
 cds_comb_diffgene_all <- cds_comb_diffgene
 
+gg_color_hue <- function(n) {
+  hues = seq(15, 375, length = n + 1)
+  hcl(h = hues, l = 65, c = 100)[1:n]
+}
 
+col_wheel <- gg_color_hue(8)
+
+ct_cols <- col_wheel[c(7, 3, 6, 2, 5, 1, 4, 8)]
+
+plot_single_gene <- function(in_cds, gene_name, y_limit=2, m_lab){
+	gg_color_hue <- function(n) {
+	  hues = seq(15, 375, length = n + 1)
+	  hcl(h = hues, l = 65, c = 100)[1:n]
+	}
+
+	col_wheel <- gg_color_hue(8)
+
+	ct_cols <- col_wheel[c(7, 3, 6, 2, 5, 1, 4, 8)]
+
+	p1 <- plot_cells(in_cds, genes=c(gene_name), label_cell_groups=F, alpha=0.7) + ggtitle(paste0(m_lab, ": ", gene_name))
+	p1 <- p1 + theme(text=element_text(size=7.5), plot.title=element_text(size=12)) + scale_color_gradient2(low="skyblue1", mid="navyblue", high="red3", midpoint=65)
+	p2 <- plot_genes_violin(in_cds[gene_name,], group_cells_by="reclu_coarse", ncol=8, log_scale=F) 
+	p2$data$reclu_coarse <- factor(p2$data$reclu_coarse, levels=c("Somatic", "GSC/Early spermatogonia", "Late spermatogonia", "ananassae spermatocyte", "Early spermatocyte", "Late spermatocyte", "Early spermatid",  "Late spermatid"))
+	# p2 <- p2 + scale_fill_manual(values=ct_cols) + coord_cartesian(ylim=c(0, y_limit)) + theme(text=element_text(size=8), axis.text.x=element_text(angle=25, hjust=1))
+	p2 <- p2 + scale_fill_manual(values=ct_cols) + theme(text=element_text(size=8), axis.text.x=element_text(angle=25, hjust=1))
+
+
+	return(list(p1, p2))
+}
+
+plot_single_gene_spec <- function(all_cds, gene_name, y_limits = c(2, 2, 2, 1)){
+	sp_lab <- colData(all_cds)$spec
+	ty_dat <- colData(all_cds)$known_type
+
+	all_cds_mel <- all_cds[,!ty_dat == "unassigned"]
+	all_cds_yak <- all_cds[,sp_lab == "yak"]
+	all_cds_ana <- all_cds[,sp_lab == "ana"]
+
+	pl_list <- list()
+	pl_list[[1]] <- plot_single_gene(all_cds, gene_name, y_limits[1], "Combined")
+	pl_list[[2]] <- plot_single_gene(all_cds_mel, gene_name, y_limits[2], "melanogaster")
+	pl_list[[3]] <- plot_single_gene(all_cds_yak, gene_name, y_limits[3], "yakuba")
+	pl_list[[4]] <- plot_single_gene(all_cds_ana, gene_name, y_limits[4], "ananassae")
+
+	names(pl_list) <- c("all", "mel", "yak", "ana")
+
+	return(pl_list)
+}
+
+
+write_out_fig <- function(in_cds, out_lab, gene_nam){
+	out_label <- paste0(out_lab, gene_nam, ".png") 
+	png(out_label, width=2400*4, height=2400*1.4, res=600, pointsize=3)
+	p_list_all <- plot_single_gene_spec(in_cds, gene_nam, c(2, 2, 2.25, 1))
+
+	grid.arrange(p_list_all$all[[1]], p_list_all$mel[[1]], p_list_all$yak[[1]], p_list_all$ana[[1]],
+		p_list_all$all[[2]], p_list_all$mel[[2]], p_list_all$yak[[2]], p_list_all$ana[[2]],
+		ncol=4, heights=c(1.75,1))
+
+	dev.off()
+}
+
+write_out_fig(cds_comb_diffgene_all, "sc_liftoff/all_figs/fig_", "aly")
+
+lapply(rownames(cds_comb_diffgene_all), function(x) write_out_fig(cds_comb_diffgene_all, "sc_liftoff/all_figs/fig_", x))
+
+
+plot_single_gene_add <- function(in_cds, full_cds, gene_name, y_limit=2, m_lab){
+	gg_color_hue <- function(n) {
+	  hues = seq(15, 375, length = n + 1)
+	  hcl(h = hues, l = 65, c = 100)[1:n]
+	}
+
+	col_wheel <- gg_color_hue(8)
+
+	ct_cols <- col_wheel[c(7, 3, 6, 2, 5, 1, 4, 8)]
+	
+	in_cds_local <- in_cds
+
+	if(!gene_name %in% rownames(exprs(in_cds))){
+		in_cds_local@assays@data@listData$counts[1,] <- exprs(full_cds)[gene_name,]
+		rownames(in_cds_local@assays@data@listData$counts)[1] <- gene_name
+		names(in_cds_local@rowRanges)[1] <- gene_name
+		in_cds_local@rowRanges@elementMetadata@listData$gene_short_name[1] <- gene_name
+	}
+
+	p1 <- plot_cells(in_cds_local, genes=c(gene_name), label_cell_groups=F, alpha=0.7) + ggtitle(paste0(m_lab, ": ", gene_name))
+	p1 <- p1 + theme(text=element_text(size=7.5), plot.title=element_text(size=12)) + scale_color_gradient2(low="skyblue1", mid="navyblue", high="red3", midpoint=65)
+	p2 <- plot_genes_violin(in_cds_local[gene_name,], group_cells_by="reclu_coarse", ncol=8, log_scale=F) 
+	p2$data$reclu_coarse <- factor(p2$data$reclu_coarse, levels=c("Somatic", "GSC/Early spermatogonia", "Late spermatogonia", "ananassae spermatocyte", "Early spermatocyte", "Late spermatocyte", "Early spermatid",  "Late spermatid"))
+	# p2 <- p2 + scale_fill_manual(values=ct_cols) + coord_cartesian(ylim=c(0, y_limit)) + theme(text=element_text(size=8), axis.text.x=element_text(angle=25, hjust=1))
+	p2 <- p2 + scale_fill_manual(values=ct_cols) + theme(text=element_text(size=8), axis.text.x=element_text(angle=25, hjust=1))
+
+
+	return(list(p1, p2))
+}
+
+plot_single_gene_spec_add <- function(all_cds, full_cds, gene_name, y_limits = c(2, 2, 2, 1)){
+	sp_lab <- colData(all_cds)$spec
+	ty_dat <- colData(all_cds)$known_type
+
+	all_cds_mel <- all_cds[,!ty_dat == "unassigned"]
+	all_cds_yak <- all_cds[,sp_lab == "yak"]
+	all_cds_ana <- all_cds[,sp_lab == "ana"]
+	
+	full_cds_mel <- full_cds[,!ty_dat == "unassigned"]
+	full_cds_yak <- full_cds[,sp_lab == "yak"]
+	full_cds_ana <- full_cds[,sp_lab == "ana"]	
+
+	pl_list <- list()
+	pl_list[[1]] <- plot_single_gene_add(all_cds, full_cds, gene_name, y_limits[1], "Combined")
+	pl_list[[2]] <- plot_single_gene_add(all_cds_mel, full_cds_mel, gene_name, y_limits[2], "melanogaster")
+	pl_list[[3]] <- plot_single_gene_add(all_cds_yak, full_cds_yak, gene_name, y_limits[3], "yakuba")
+	pl_list[[4]] <- plot_single_gene_add(all_cds_ana, full_cds_ana, gene_name, y_limits[4], "ananassae")
+
+	names(pl_list) <- c("all", "mel", "yak", "ana")
+
+	return(pl_list)
+}
+
+write_out_fig_add <- function(in_cds, full_cds, out_lab, gene_nam){
+	out_label <- paste0(out_lab, gene_nam, ".png")
+	png(out_label, width=2400*4, height=2400*1.4, res=600, pointsize=3)
+	p_list_all <- plot_single_gene_spec_add(in_cds, full_cds, gene_nam, c(2, 2, 2.25, 1))
+
+	grid.arrange(p_list_all$all[[1]], p_list_all$mel[[1]], p_list_all$yak[[1]], p_list_all$ana[[1]],
+		p_list_all$all[[2]], p_list_all$mel[[2]], p_list_all$yak[[2]], p_list_all$ana[[2]],
+		ncol=4, heights=c(1.75,1))
+
+	dev.off()
+}
+
+
+raz_genes <- c("aly", "aub", "bam", "CadN", "can", "cher", "CycB", "Dic61B", "dlg1", "esg", "eya", "f-cup", "Fas3", "fzo", "hh", "Hml", "kl-2", "kl-3", "kl-5", "kmg", "Mst77F", "Mst84Db", "Mst84Dc", "Mst87F", "MtnA", "Nep5", "p53", "p-cup", "piwi", "Rbp4", "sa", "shg", "so", "soti", "stg", "Syt1", "tj", "tomboy20", "upd1", "vas", "wa-cup", "zpg")
+
+#kl-3, Mst84Db, Mst84Dc, Mst87F, not in orthologs list entirely
+#kl-5 not in yakuba
+#fzo, kl-5, vas not in ana
+#sa duplicated in yakuba
+
+raz_genes <- subset(raz_genes, raz_genes %in% rownames(exprs(cds_comb)))
+
+#aly and wa-cup already in 198 genes
+
+raz_genes <- subset(raz_genes, !raz_genes %in% rownames(exprs(cds_comb_diffgene_all)))
+
+symbs_mel <- read.csv("/home/sc_liftoff/genomes_fb/dmel_orthologs_in_drosophila_species_fb_2022_01.tsv", skip=5, header=F, sep="\t")
+
+
+lapply(raz_genes, function(x) write_out_fig_add(cds_comb_diffgene_all, cds_comb, "sc_liftoff/all_figs_raz/fig_", x))
+
+
+pData(cds_comb) <- cbind(pData(cds_comb), pData(cds_comb_diffgene_all)[,"reclu_coarse"])
+colnames(pData(cds_comb))[5] <- "reclu_coarse"
+
+genes_ana_clu <- read.csv("sc_liftoff/an_top_10.tsv", sep="\t", header=T)
+
+genes_ana_clu <- subset(genes_ana_clu, gene  %in% rownames(exprs(cds_comb))) 
+
+lapply(genes_ana_clu[,"gene"], function(x) write_out_fig_add(cds_comb_diffgene_all, cds_comb, "sc_liftoff/all_figs_an_top20/fig_", x))
+
+hcr_genes <- c("Rbp4", "B52", "Pkd2", "soti")
+
+lapply(hcr_genes, function(x) write_out_fig_add(cds_comb_diffgene_all, cds_comb, "sc_liftoff/hcr_marks/fig_", x))
+
+redo_genes <- c("Obp99a", "eEF1alpha1", "CG34434", "CG15876", "CAH13", "schuy", "whip", "Pzl")
+
+lapply(redo_genes, function(x) write_out_fig_add(cds_comb_diffgene_all, cds_comb, "sc_liftoff/all_figs_redo/fig_", x))
+
+
+save(list=ls(), file="sc_liftoff/wrkspce_run_integrated.rdata")
+
+
+#similarity matrix
+#first make averages by gene 
+#pairwise 
+
+reclu_coarse_fac <- factor(as.factor(reclu_coarse), levels=c("Somatic", "GSC/Early spermatogonia", "Late spermatogonia", "ananassae spermatocyte", "Early spermatocyte", "Late spermatocyte", "Early spermatid",  "Late spermatid"))
+pData(cds_comb)[,"reclu_coarse"] <- reclu_coarse_fac
+colData(cds_comb)[,"reclu_coarse"] <- reclu_coarse_fac
+colData(cds_comb)$known_type <- colData(cds_comb_diffgene_all)$known_type
+
+spec <- colData(cds_comb)$spec
+type1 <- colData(cds_comb)$known_type
+
+cor_analysis_mel <- cds_comb[,!type1 == "unassigned"]
+cor_analysis_yak <- cds_comb[,spec == "yak"]
+cor_analysis_ana <- cds_comb[,spec == "ana"]
+
+ct_avgs <- matrix(0, nrow=nrow(exprs(cds_comb)), ncol=8*3)
+
+ct_avgs_list <- lapply(list(cor_analysis_mel, cor_analysis_yak, cor_analysis_ana), function(x){
+		return(lapply(levels(reclu_coarse_fac), function(y){
+			return(rowMeans(exprs(x)[,which(colData(x)$reclu_coarse == y)]))
+		}))
+	})
+
+ct_avgs <- do.call("cbind", ct_avgs_list)
+ct_avgs <- do.call("cbind", ct_avgs)
+
+colnames(ct_avgs) <- unlist(lapply(c("mel", "yak", "ana"), function(x) unlist(lapply(levels(reclu_coarse_fac), function(y) paste0(x, "_", y)))))
+rownames(ct_avgs) <- rownames(exprs(cds_comb))
+
+ct_cors <- matrix(0, nrow=8*3, ncol=8*3)
+colnames(ct_cors) <- colnames(ct_avgs)
+rownames(ct_cors) <- colnames(ct_cors)
+
+for(i in 1:24){
+	for(j in 1:24){
+		ct_cors[i,j] <- cor(ct_avgs[,rownames(ct_cors)[i]], ct_avgs[,colnames(ct_cors)[j]], method="spearman")
+	}
+}
+
+library(RColorBrewer)
+
+png("sc_liftoff/ct_pair_cors.png", width=3600, height=3600, res=300)
+heatmap(ct_cors[24:1,], Rowv=NA, Colv=NA, margins=c(13,13), scale="none", col= colorRampPalette(brewer.pal(8, "Oranges"))(25))
+legend(x="bottomright", legend=c(paste0("cor=", as.character(signif(min(as.numeric(ct_cors)), digits=3))), paste("cor=", as.character(signif(median(as.numeric(ct_cors)), digits=2))), "cor=1.00"), 
+     fill=colorRampPalette(brewer.pal(8, "Oranges"))(3))
+dev.off()
+
+
+
+png("test1.png", width=2400*2, height=2400*1.4, res=600, pointsize=3)
+temp1 <- plot_single_gene_add(cds_comb_diffgene_all, cds_comb, "stg", m_lab="Combined: stg")
+grid.arrange(temp1[[1]], temp4[[1]], temp1[[2]], temp4[[2]], ncol=2, heights=c(1.75, 1))
+dev.off()
 
 pr_graph_test_res <- graph_test(cds_comb_proc, neighbor_graph="knn", cores=8)
 pr_deg_ids <- row.names(subset(pr_graph_test_res, q_value < 0.05))
+
+
+
 
 
 # # cluster/garnett classifier

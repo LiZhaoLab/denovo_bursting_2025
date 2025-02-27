@@ -9,6 +9,8 @@ library(ggsignif)
 load("sc_liftoff/bursting/allpickslist.rdata")
 dnt_dat <- read.csv("sc_liftoff/dnt_data.csv", header=T, colClasses=c("spec_code"="character"))
 
+plot_new <- FALSE
+
 extract_geneid <- function(a) return(str_match(a, "gene_id\\s*(.*?)\\s*;")[1,2])
 extract_genesymbol <- function(a) return(str_match(a, "gene_symbol\\s*(.*?)\\s*;")[1,2])
 
@@ -365,7 +367,7 @@ plot_ind <- function(in_mat, exp_mat, in_mat_lab, exp_mat_lab, whi_spec, y_low, 
 	ct[which(ct == "Late_spermatocyte")] <- "Late Spermatocyte"
 	ct[which(ct == "Early_spermatid")] <- "Early Spermatid"
 	ct[which(ct == "Late_spermatid")] <- "Late Spermatid"
-	ct[which(ct == "ananassae_spermatid")] <- "ananassae Spermatid"
+	ct[which(ct == "ananassae_spermatid")] <- "ananassae Spermatocyte"
 	
 	stat <- this_dat$status
 	stat[which(stat == "All_Genes")] <- "All Genes"
@@ -376,7 +378,49 @@ plot_ind <- function(in_mat, exp_mat, in_mat_lab, exp_mat_lab, whi_spec, y_low, 
 	stat[which(stat == "X_linked")] <- "X Linked"
 	stat[which(stat == "Autosomal")] <- "Autosomal"
 	
-	this_dat$cell_type <- factor(ct, levels=c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "Early Spermatocyte", "Late Spermatocyte", "Early Spermatid", "Late Spermatid", "ananassae Spermatid"))
+	this_dat$cell_type <- factor(ct, levels=c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "ananassae Spermatocyte", "Early Spermatocyte", "Late Spermatocyte", "Early Spermatid",  "Late Spermatid"))
+	
+	this_dat$status <- factor(stat, levels=c("Neighbor L2", "Neighbor L1", "Neighbor R1", "Neighbor R2", "All Genes", "X Linked", "Autosomal"))
+	
+	if(fix_ana){
+		if(whi_spec %in% c("mel", "yak")){
+			this_dat <- subset(this_dat, cell_type %in% c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "Early Spermatocyte", "Late Spermatocyte", "Early Spermatid",  "Late Spermatid"))
+		}
+
+		if(whi_spec == "ana"){
+			this_dat <- subset(this_dat, cell_type %in% c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "ananassae Spermatocyte", "Late Spermatocyte", "Early Spermatid",  "Late Spermatid"))
+		}
+		# ct <- subset(ct, 
+	
+	}
+	
+	ggplot(this_dat, aes(x=cell_type, y=parameter, fill=status), outlier.shape = NA) + geom_boxplot() + coord_cartesian(ylim=c(y_low, y_high)) + ylab(ylabel) + xlab("Cell Type") + labs(fill="Gene Set") + ggtitle(in_title)
+}
+
+
+plot_ind1 <- function(in_mat, exp_mat, in_mat_lab, exp_mat_lab, whi_spec, y_low, y_high, ylabel, in_title, fix_ana=FALSE){
+	this_dat <- format_df(in_mat, exp_mat, in_mat_lab, exp_mat_lab)	
+	this_dat <- this_dat[which(this_dat[,"spec"] == whi_spec),]
+	
+	ct <- this_dat$cell_type
+	ct[which(ct == "GSC_Early_spermatogonia")] <- "GSC/Early Spermatogonia"
+	ct[which(ct == "Late_spermatogonia")] <- "Late Spermatogonia"
+	ct[which(ct == "Early_spermatocyte")] <- "Early Spermatocyte"
+	ct[which(ct == "Late_spermatocyte")] <- "Late Spermatocyte"
+	ct[which(ct == "Early_spermatid")] <- "Early Spermatid"
+	ct[which(ct == "Late_spermatid")] <- "Late Spermatid"
+	ct[which(ct == "ananassae_spermatid")] <- "ananassae Spermatocyte"
+	
+	stat <- this_dat$status
+	stat[which(stat == "All_Genes")] <- "All Genes"
+	stat[which(stat == "Neighbor_L2")] <- "Neighbor L2"
+	stat[which(stat == "Neighbor_L1")] <- "Neighbor L1"
+	stat[which(stat == "Neighbor_R1")] <- "Neighbor R1"
+	stat[which(stat == "Neighbor_R2")] <- "Neighbor R2"
+	stat[which(stat == "X_linked")] <- "X Linked"
+	stat[which(stat == "Autosomal")] <- "Autosomal"
+	
+	this_dat$cell_type <- factor(ct, levels=c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "ananassae Spermatocyte", "Early Spermatocyte", "Late Spermatocyte", "Early Spermatid",  "Late Spermatid"))
 	
 	this_dat$status <- factor(stat, levels=c("Neighbor L2", "Neighbor L1", "Neighbor R1", "Neighbor R2", "All Genes", "X Linked", "Autosomal"))
 	
@@ -386,7 +430,12 @@ plot_ind <- function(in_mat, exp_mat, in_mat_lab, exp_mat_lab, whi_spec, y_low, 
 		}
 
 		if(whi_spec == "ana"){
-			this_dat <- subset(this_dat, cell_type %in% c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "Early Spermatocyte", "Late Spermatocyte", "ananassae Spermatid"))
+			this_dat <- subset(this_dat, cell_type %in% c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "ananassae Spermatocyte", "Late Spermatocyte", "Early Spermatid", "Late Spermatid"))
+			this_dat$cell_type <- factor(this_dat$cell_type, levels=c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "ananassae Spermatocyte", "Late Spermatocyte", "Early Spermatid", "Late Spermatid"))
+
+			this_labs <- factor(c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "ananassae Spermatocyte", "Late Spermatocyte", "Early Spermatid", "Late Spermatid"))
+			
+			return(ggplot(this_dat, aes(x=cell_type, y=parameter, fill=status), outlier.shape = NA) + geom_boxplot() + scale_x_discrete("cell_type", breaks=this_labs, drop=FALSE) + coord_cartesian(ylim=c(y_low, y_high)) + ylab(ylabel) + xlab("Cell Type") + labs(fill="Gene Set") + ggtitle(in_title))
 		}
 		# ct <- subset(ct, 
 	
@@ -417,7 +466,7 @@ plot_onlyone <- function(in_mat, in_mat_lab, whi_spec, y_low, y_high, ylabel, in
 	ct[which(ct == "Late_spermatocyte")] <- "Late Spermatocyte"
 	ct[which(ct == "Early_spermatid")] <- "Early Spermatid"
 	ct[which(ct == "Late_spermatid")] <- "Late Spermatid"
-	ct[which(ct == "ananassae_spermatid")] <- "ananassae Spermatid"
+	ct[which(ct == "ananassae_spermatid")] <- "ananassae Spermatocyte"
 	
 	stat <- this_dat$status
 	stat[which(stat == "All_Genes")] <- "All Genes"
@@ -428,11 +477,11 @@ plot_onlyone <- function(in_mat, in_mat_lab, whi_spec, y_low, y_high, ylabel, in
 	stat[which(stat == "X_linked")] <- "X Linked"
 	stat[which(stat == "Autosomal")] <- "Autosomal"
 	
-	this_dat$cell_type <- factor(ct, levels=c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "Early Spermatocyte", "Late Spermatocyte", "Early Spermatid", "Late Spermatid", "ananassae Spermatid"))
+	this_dat$cell_type <- factor(ct, levels=c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "ananassae Spermatocyte", "Early Spermatocyte", "Late Spermatocyte", "Early Spermatid",  "Late Spermatid"))
 	
 	this_dat$status <- factor(stat, levels=c("Neighbor L2", "Neighbor L1", "Neighbor R1", "Neighbor R2", "All Genes", "X Linked", "Autosomal"))
 	
-	this_breaks <- factor(c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "Early Spermatocyte", "Late Spermatocyte", "Early Spermatid", "Late Spermatid", "ananassae Spermatid"))
+	this_breaks <- factor(c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "ananassae Spermatocyte", "Early Spermatocyte", "Late Spermatocyte", "Early Spermatid",  "Late Spermatid"))
 	
 	this_limits <- 1:8
 	
@@ -450,11 +499,11 @@ plot_onlyone <- function(in_mat, in_mat_lab, whi_spec, y_low, y_high, ylabel, in
 		}
 
 		if(whi_spec == "ana"){
-			this_dat <- subset(this_dat, cell_type %in% c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "Early Spermatocyte", "Late Spermatocyte", "ananassae Spermatid"))
-			this_dat$cell_type <- factor(this_dat$cell_type, levels=c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "Early Spermatocyte", "Late Spermatocyte", "ananassae Spermatid", ""))
+			this_dat <- subset(this_dat, cell_type %in% c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "ananassae Spermatocyte", "Late Spermatocyte", "Early Spermatid", "Late Spermatid"))
+			this_dat$cell_type <- factor(this_dat$cell_type, levels=c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "ananassae Spermatocyte", "Late Spermatocyte", "Early Spermatid", "Late Spermatid"))
 			
-			ct_cols <- ct_cols[c(1:5, 8)]			
-			this_labs <- factor(c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "Early Spermatocyte", "Late Spermatocyte", "ananassae Spermatid", ""))
+			ct_cols <- ct_cols[c(1:7)]			
+			this_labs <- factor(c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "ananassae Spermatocyte", "Late Spermatocyte", "Early Spermatid", "Late Spermatid"))
 						
 			return(ggplot(this_dat, aes(x=cell_type, y=parameter), outlier.shape = NA) + geom_boxplot(fill=ct_cols) + scale_x_discrete("cell_type", breaks=this_labs, drop=FALSE) + coord_cartesian(ylim=c(y_low, y_high)) + ylab(ylabel) + xlab("Cell Type") + labs(fill="Gene Set") + ggtitle(in_title))
 		}
@@ -504,34 +553,35 @@ dnt_R2_size_mean_stnd <- dnt_R2_stnd[[2]]
 
 #plot_onlyone <- function(in_mat, in_mat_lab, whi_spec, y_low, y_high, ylabel, in_title, fix_ana=FALSE){
 
-png("sc_liftoff/bursting/all_cells_burstfreq.png", width=2400*3*0.92*2, height=2400*3*0.8, res=600, pointsize=3)
+if(plot_new){
+	png("sc_liftoff/bursting/all_cells_burstfreq.png", width=2400*3*0.92*2, height=2400*3*0.8, res=600, pointsize=3)
 
-p1 <- plot_onlyone(all_burst_size_mean, "All_Genes", "mel", 0, 32, "Burst Size", "Burst Size in D. melanogaster", TRUE)
-p2 <- plot_onlyone(all_burst_size_mean, "All_Genes", "yak", 0, 85, "Burst Size", "Burst Size in D. yakuba", TRUE)
-p3 <- plot_onlyone(all_burst_size_mean, "All_Genes", "ana", 1.2, 4.75, "Burst Size", "Burst Size in D. ananassae", TRUE)
+	p1 <- plot_onlyone(all_burst_size_mean, "All_Genes", "mel", 0, 32, "Burst Size", "Burst Size in D. melanogaster", TRUE)
+	p2 <- plot_onlyone(all_burst_size_mean, "All_Genes", "yak", 0, 85, "Burst Size", "Burst Size in D. yakuba", TRUE)
+	p3 <- plot_onlyone(all_burst_size_mean, "All_Genes", "ana", 1.2, 4.75, "Burst Size", "Burst Size in D. ananassae", TRUE)
 
-p4 <- plot_onlyone(all_burst_freq_mean, "All_Genes", "mel", 0, 7.2, "Burst Frequency", "Burst Frequency in D. melanogaster", TRUE)
-p5 <- plot_onlyone(all_burst_freq_mean, "All_Genes", "yak", 0, 2.5, "Burst Frequency", "Burst Frequency in D. yakuba", TRUE)
-p6 <- plot_onlyone(all_burst_freq_mean, "All_Genes", "ana", 0, 6, "Burst Frequency", "Burst Frequency in D. ananassae", TRUE)
+	p4 <- plot_onlyone(all_burst_freq_mean, "All_Genes", "mel", 0, 7.2, "Burst Frequency", "Burst Frequency in D. melanogaster", TRUE)
+	p5 <- plot_onlyone(all_burst_freq_mean, "All_Genes", "yak", 0, 2.5, "Burst Frequency", "Burst Frequency in D. yakuba", TRUE)
+	p6 <- plot_onlyone(all_burst_freq_mean, "All_Genes", "ana", 0, 6, "Burst Frequency", "Burst Frequency in D. ananassae", TRUE)
 
-p1 <- p1 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
-p2 <- p2 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
-p3 <- p3 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
-p4 <- p4 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
-p5 <- p5 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
-p6 <- p6 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	p1 <- p1 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	p2 <- p2 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	p3 <- p3 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	p4 <- p4 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	p5 <- p5 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	p6 <- p6 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
 
 
-grid.arrange(p1, p4, p2, p5, p3, p6, ncol=2)
+	grid.arrange(p1, p4, p2, p5, p3, p6, ncol=2)
 
-dev.off()
+	dev.off()
 
-svg("sc_liftoff/bursting/all_cells_burstfreq.svg", width=22.08, height=9.6, pointsize=3)
+	svg("sc_liftoff/bursting/all_cells_burstfreq.svg", width=22.08, height=9.6, pointsize=3)
 
-grid.arrange(p1, p4, p2, p5, p3, p6, ncol=2)
+	grid.arrange(p1, p4, p2, p5, p3, p6, ncol=2)
 
-dev.off()
-
+	dev.off()
+}
 
 extract_paired <- function(in1, in2, spec_label, ct_label){
 	this_df <- format_df(in1, in2, "a", "b")
@@ -553,7 +603,7 @@ run_pval_mannwhitney(all_burst_size_mean, dnt_L1_size_mean, "mel", "Early_sperma
 
 
 #cols will be celltype, rows will be all, L2...R2, the collate mel, yak, ana, make matrix for p.vals, and N
-cell_type_vec <- c("Somatic", "GSC_Early_spermatogonia", "Late_spermatogonia", "Early_spermatocyte", "Late_spermatocyte", "Early_spermatid", "Late_spermatid", "ananassae_spermatid")
+cell_type_vec <- c("Somatic", "GSC_Early_spermatogonia", "Late_spermatogonia", "Early_spermatocyte", "Late_spermatocyte", "Early_spermatid",  "Late_spermatid", "ananassae_spermatid")
 spec_vec <- c("mel", "yak", "ana")
 dat_size_list <- list(dnt_L2_size_mean, dnt_L1_size_mean, dnt_R1_size_mean, dnt_R2_size_mean)
 dat_freq_list <- list(dnt_L2_freq_mean, dnt_L1_freq_mean, dnt_R1_freq_mean, dnt_R2_freq_mean)
@@ -621,6 +671,18 @@ write.csv(mtx_freq_N, file="sc_liftoff/bursting/mtx_freq_N.csv")
 
 write.csv(mtx_size_N_ref, file="sc_liftoff/bursting/mtx_size_N_ref.csv")
 write.csv(mtx_freq_N_ref, file="sc_liftoff/bursting/mtx_freq_N_ref.csv")
+
+write.csv(all_burst_size_mean, file="sc_liftoff/bursting/all_burst_size_mean.csv")
+write.csv(all_burst_freq_mean, file="sc_liftoff/bursting/all_burst_freq_mean.csv")
+write.csv(dnt_L2_size_mean, file="sc_liftoff/bursting/dnt_L2_size_mean.csv")
+write.csv(dnt_L1_size_mean, file="sc_liftoff/bursting/dnt_L1_size_mean.csv") 
+write.csv(dnt_R1_size_mean, file="sc_liftoff/bursting/dnt_R1_size_mean.csv") 
+write.csv(dnt_R2_size_mean, file="sc_liftoff/bursting/dnt_R2_size_mean.csv") 
+write.csv(dnt_L2_freq_mean, file="sc_liftoff/bursting/dnt_L2_freq_mean.csv")
+write.csv(dnt_L1_freq_mean, file="sc_liftoff/bursting/dnt_L1_freq_mean.csv") 
+write.csv(dnt_R1_freq_mean, file="sc_liftoff/bursting/dnt_R1_freq_mean.csv") 
+write.csv(dnt_R2_freq_mean, file="sc_liftoff/bursting/dnt_R2_freq_mean.csv") 
+
 
 mtx_comb_list <- unlist(lapply(1:8, function(x) return(list(mtx_size_pval[,x], mtx_freq_pval[,x], mtx_size_N[,x], mtx_size_N_ref_rep[,x]))), recursive=F)
 mtx_comb_colnames <- unlist(lapply(cell_type_vec, function(x) return(c(paste(x, "_size_p", sep=""), paste(x, "_freq_p", sep=""), paste(x, "_N_genes", sep=""), paste(x, "_N_allgenes", sep="")))))
@@ -697,8 +759,8 @@ plot_neigh <- function(dat_1, dat_2, lab_1, lab_2, lab_spec, y_low, y_high, y_si
 		xs_idx <- 0:6
 	}
 	if(ana_fix && lab_spec == "ana"){
-		idxs <- c(1:5, 8)
-		xs_idx <- 0:5
+		idxs <- c(1:3, 8, 5:7)
+		xs_idx <- 0:6
 	}
 	
 	vec_n_1 <- n_vals_1[idxs]
@@ -712,6 +774,32 @@ plot_neigh <- function(dat_1, dat_2, lab_1, lab_2, lab_spec, y_low, y_high, y_si
 
 	return(output)
 }
+
+
+plot_neigh1 <- function(dat_1, dat_2, lab_1, lab_2, lab_spec, y_low, y_high, y_signif, y_locn, lab_ylab, lab_mainlab, ana_fix, pv_vals, n_vals_1, n_vals_2){
+	idxs <- 1:length(n_vals_1)
+	xs_idx <- 0:(length(n_vals_1)-1)
+	if(ana_fix && lab_spec %in% c("mel", "yak")){
+		idxs <- 1:7
+		xs_idx <- 0:6
+	}
+	if(ana_fix && lab_spec == "ana"){
+		idxs <- c(1:3, 8, 5:7)
+		xs_idx <- 0:6
+	}
+	
+	vec_n_1 <- n_vals_1[idxs]
+	vec_n_2 <- n_vals_2[idxs]
+	vec_pv <- pv_vals[idxs]
+	
+	output <- plot_ind1(dat_1, dat_2, lab_1, lab_2, lab_spec, y_low, y_high, lab_ylab, lab_mainlab, ana_fix)
+	output <- output + geom_signif(y_position=rep(y_signif, length(idxs)), xmin=xs_idx + 0.8, xmax=xs_idx + 1.2, annotation=get_pval_stars(vec_pv), tip_length=0, vjust=2) 
+	output <- add_N_labs(output, xs_idx + 0.75, rep(y_locn, length(idxs)), vec_n_1)
+	output <- add_N_labs(output, xs_idx + 1.25, rep(y_locn, length(idxs)), vec_n_2)
+
+	return(output)
+}
+
 
 plot_neigh_mult <- function(data_1, data_2_list, label_1, label_2_vec, label_species, y_lbound, y_hbound, y_sig, y_locaN, label_y, label_main, bool_fix_ana, pv_mat, mtx_nvals_1, n_vals_ref){
 	neigh_L2 <- plot_neigh(data_1, data_2_list[[1]], label_1, label_2_vec[1], label_species, y_lbound, y_hbound, y_sig, y_locaN, label_y, label_main[1], bool_fix_ana, pv_mat[1,], mtx_nvals_1[1,], n_vals_ref)
@@ -729,62 +817,64 @@ plot_neigh_mult <- function(data_1, data_2_list, label_1, label_2_vec, label_spe
 	return(list(neigh_L2, neigh_L1, neigh_R1, neigh_R2))
 }
 
-png("sc_liftoff/bursting/comb_size_all.png", width=2400*3.5*3.90, height=2400*3, res=600, pointsize=3)
+if(plot_new){
 
-p_size_mel_list <- plot_neigh_mult(all_burst_size_mean, list(dnt_L2_size_mean, dnt_L1_size_mean, dnt_R1_size_mean, dnt_R2_size_mean), "All_Genes", c("Neighbor_L2", "Neighbor_L1", "Neighbor_R1", "Neighbor_R2"), "mel", -11*45/75, 45, -2.5*45/75, -11*45/75, "Burst Size", unlist(lapply(c("L2", "L1", "R1", "R2"), function(x) paste("Burst Size in D. melanogaster, ", x, " Neighbor", sep=""))), TRUE, mtx_size_pval[1:4,], mtx_size_N[1:4,], mtx_size_N_ref[1,])
+	png("sc_liftoff/bursting/comb_size_all.png", width=2400*3.5*3.90, height=2400*3, res=600, pointsize=3)
 
-p_size_yak_list <- plot_neigh_mult(all_burst_size_mean, list(dnt_L2_size_mean, dnt_L1_size_mean, dnt_R1_size_mean, dnt_R2_size_mean), "All_Genes", c("Neighbor_L2", "Neighbor_L1", "Neighbor_R1", "Neighbor_R2"), "yak", -11*100/75, 100, -2.5*100/75, -11*100/75, "Burst Size", unlist(lapply(c("L2", "L1", "R1", "R2"), function(x) paste("Burst Size in D. yakuba, ", x, " Neighbor", sep=""))), TRUE, mtx_size_pval[1:4 + 1*4,], mtx_size_N[1:4 + 1*4,], mtx_size_N_ref[2,])
+	p_size_mel_list <- plot_neigh_mult(all_burst_size_mean, list(dnt_L2_size_mean, dnt_L1_size_mean, dnt_R1_size_mean, dnt_R2_size_mean), "All_Genes", c("Neighbor_L2", "Neighbor_L1", "Neighbor_R1", "Neighbor_R2"), "mel", -11*45/75, 45, -2.5*45/75, -11*45/75, "Burst Size", unlist(lapply(c("L2", "L1", "R1", "R2"), function(x) paste("Burst Size in D. melanogaster, ", x, " Neighbor", sep=""))), TRUE, mtx_size_pval[1:4,], mtx_size_N[1:4,], mtx_size_N_ref[1,])
 
-p_size_ana_list <- plot_neigh_mult(all_burst_size_mean, list(dnt_L2_size_mean, dnt_L1_size_mean, dnt_R1_size_mean, dnt_R2_size_mean), "All_Genes", c("Neighbor_L2", "Neighbor_L1", "Neighbor_R1", "Neighbor_R2"), "ana", -11*12/75, 12, -2.5*15/75, -11*12/75, "Burst Size", unlist(lapply(c("L2", "L1", "R1", "R2"), function(x) paste("Burst Size in D. ananassae, ", x, " Neighbor", sep=""))), TRUE, mtx_size_pval[1:4 + 2*4,], mtx_size_N[1:4 + 2*4,], mtx_size_N_ref[3,])
+	p_size_yak_list <- plot_neigh_mult(all_burst_size_mean, list(dnt_L2_size_mean, dnt_L1_size_mean, dnt_R1_size_mean, dnt_R2_size_mean), "All_Genes", c("Neighbor_L2", "Neighbor_L1", "Neighbor_R1", "Neighbor_R2"), "yak", -11*100/75, 100, -2.5*100/75, -11*100/75, "Burst Size", unlist(lapply(c("L2", "L1", "R1", "R2"), function(x) paste("Burst Size in D. yakuba, ", x, " Neighbor", sep=""))), TRUE, mtx_size_pval[1:4 + 1*4,], mtx_size_N[1:4 + 1*4,], mtx_size_N_ref[2,])
 
-grid.arrange(p_size_mel_list[[1]], p_size_mel_list[[2]], p_size_mel_list[[3]], p_size_mel_list[[4]], p_size_yak_list[[1]], p_size_yak_list[[2]], p_size_yak_list[[3]], p_size_yak_list[[4]], p_size_ana_list[[1]], p_size_ana_list[[2]], p_size_ana_list[[3]], p_size_ana_list[[4]], ncol=4)
+	p_size_ana_list <- plot_neigh_mult(all_burst_size_mean, list(dnt_L2_size_mean, dnt_L1_size_mean, dnt_R1_size_mean, dnt_R2_size_mean), "All_Genes", c("Neighbor_L2", "Neighbor_L1", "Neighbor_R1", "Neighbor_R2"), "ana", -11*12/75, 12, -2.5*15/75, -11*12/75, "Burst Size", unlist(lapply(c("L2", "L1", "R1", "R2"), function(x) paste("Burst Size in D. ananassae, ", x, " Neighbor", sep=""))), TRUE, mtx_size_pval[1:4 + 2*4,], mtx_size_N[1:4 + 2*4,], mtx_size_N_ref[3,])
 
-dev.off()
+	grid.arrange(p_size_mel_list[[1]], p_size_mel_list[[2]], p_size_mel_list[[3]], p_size_mel_list[[4]], p_size_yak_list[[1]], p_size_yak_list[[2]], p_size_yak_list[[3]], p_size_yak_list[[4]], p_size_ana_list[[1]], p_size_ana_list[[2]], p_size_ana_list[[3]], p_size_ana_list[[4]], ncol=4)
 
-svg("sc_liftoff/bursting/comb_size_all_mel.svg", width=4*3.5*3.90, height=4*1, pointsize=3)
-grid.arrange(p_size_mel_list[[1]], p_size_mel_list[[2]], p_size_mel_list[[3]], p_size_mel_list[[4]], ncol=4)
+	dev.off()
 
-dev.off()
+	svg("sc_liftoff/bursting/comb_size_all_mel.svg", width=4*3.5*3.90, height=4*1, pointsize=3)
+	grid.arrange(p_size_mel_list[[1]], p_size_mel_list[[2]], p_size_mel_list[[3]], p_size_mel_list[[4]], ncol=4)
 
-svg("sc_liftoff/bursting/comb_size_all_yak.svg", width=4*3.5*3.90, height=4*1, pointsize=3)
-grid.arrange(p_size_yak_list[[1]], p_size_yak_list[[2]], p_size_yak_list[[3]], p_size_yak_list[[4]], ncol=4)
+	dev.off()
 
-dev.off()
+	svg("sc_liftoff/bursting/comb_size_all_yak.svg", width=4*3.5*3.90, height=4*1, pointsize=3)
+	grid.arrange(p_size_yak_list[[1]], p_size_yak_list[[2]], p_size_yak_list[[3]], p_size_yak_list[[4]], ncol=4)
 
-svg("sc_liftoff/bursting/comb_size_all_ana.svg", width=4*3.5*3.90, height=4*1, pointsize=3)
-grid.arrange(p_size_ana_list[[1]], p_size_ana_list[[2]], p_size_ana_list[[3]], p_size_ana_list[[4]], ncol=4)
+	dev.off()
 
-dev.off()
+	svg("sc_liftoff/bursting/comb_size_all_ana.svg", width=4*3.5*3.90, height=4*1, pointsize=3)
+	grid.arrange(p_size_ana_list[[1]], p_size_ana_list[[2]], p_size_ana_list[[3]], p_size_ana_list[[4]], ncol=4)
 
-
-png("sc_liftoff/bursting/comb_freq_all.png", width=2400*3.5*3.90, height=2400*3, res=600, pointsize=3)
-
-p_freq_mel_list <- plot_neigh_mult(all_burst_freq_mean, list(dnt_L2_freq_mean, dnt_L1_freq_mean, dnt_R1_freq_mean, dnt_R2_freq_mean), "All_Genes", c("Neighbor_L2", "Neighbor_L1", "Neighbor_R1", "Neighbor_R2"), "mel", -11*10/75, 10, -2.5*10/75, -11*10/75, "Burst Frequency", unlist(lapply(c("L2", "L1", "R1", "R2"), function(x) paste("Burst Frequency in D. melanogaster, ", x, " Neighbor", sep=""))), TRUE, mtx_freq_pval[1:4,], mtx_freq_N[1:4,], mtx_freq_N_ref[1,])
-
-p_freq_yak_list <- plot_neigh_mult(all_burst_freq_mean, list(dnt_L2_freq_mean, dnt_L1_freq_mean, dnt_R1_freq_mean, dnt_R2_freq_mean), "All_Genes", c("Neighbor_L2", "Neighbor_L1", "Neighbor_R1", "Neighbor_R2"), "yak", -11*4/75, 4, -2.5*4/75, -11*4/75, "Burst Frequency", unlist(lapply(c("L2", "L1", "R1", "R2"), function(x) paste("Burst Frequency in D. yakuba, ", x, " Neighbor", sep=""))), TRUE, mtx_freq_pval[1:4 + 1*4,], mtx_freq_N[1:4 + 1*4,], mtx_freq_N_ref[2,])
-
-p_freq_ana_list <- plot_neigh_mult(all_burst_freq_mean, list(dnt_L2_freq_mean, dnt_L1_freq_mean, dnt_R1_freq_mean, dnt_R2_freq_mean), "All_Genes", c("Neighbor_L2", "Neighbor_L1", "Neighbor_R1", "Neighbor_R2"), "ana", -11*7.5/75, 7.5, -2.5*7.5/75, -11*7.5/75, "Burst Frequency", unlist(lapply(c("L2", "L1", "R1", "R2"), function(x) paste("Burst Frequency in D. ananassae, ", x, " Neighbor", sep=""))), TRUE, mtx_freq_pval[1:4 + 2*4,], mtx_freq_N[1:4 + 2*4,], mtx_freq_N_ref[3,])
-
-grid.arrange(p_freq_mel_list[[1]], p_freq_mel_list[[2]], p_freq_mel_list[[3]], p_freq_mel_list[[4]], p_freq_yak_list[[1]], p_freq_yak_list[[2]], p_freq_yak_list[[3]], p_freq_yak_list[[4]], p_freq_ana_list[[1]], p_freq_ana_list[[2]], p_freq_ana_list[[3]], p_freq_ana_list[[4]], ncol=4)
-
-dev.off()
+	dev.off()
 
 
-svg("sc_liftoff/bursting/comb_freq_all_mel.svg", width=4*3.5*3.90, height=4*1, pointsize=3)
-grid.arrange(p_freq_mel_list[[1]], p_freq_mel_list[[2]], p_freq_mel_list[[3]], p_freq_mel_list[[4]], ncol=4)
+	png("sc_liftoff/bursting/comb_freq_all.png", width=2400*3.5*3.90, height=2400*3, res=600, pointsize=3)
 
-dev.off()
+	p_freq_mel_list <- plot_neigh_mult(all_burst_freq_mean, list(dnt_L2_freq_mean, dnt_L1_freq_mean, dnt_R1_freq_mean, dnt_R2_freq_mean), "All_Genes", c("Neighbor_L2", "Neighbor_L1", "Neighbor_R1", "Neighbor_R2"), "mel", -11*10/75, 10, -2.5*10/75, -11*10/75, "Burst Frequency", unlist(lapply(c("L2", "L1", "R1", "R2"), function(x) paste("Burst Frequency in D. melanogaster, ", x, " Neighbor", sep=""))), TRUE, mtx_freq_pval[1:4,], mtx_freq_N[1:4,], mtx_freq_N_ref[1,])
 
-svg("sc_liftoff/bursting/comb_freq_all_yak.svg", width=4*3.5*3.90, height=4*1, pointsize=3)
-grid.arrange(p_freq_yak_list[[1]], p_freq_yak_list[[2]], p_freq_yak_list[[3]], p_freq_yak_list[[4]], ncol=4)
+	p_freq_yak_list <- plot_neigh_mult(all_burst_freq_mean, list(dnt_L2_freq_mean, dnt_L1_freq_mean, dnt_R1_freq_mean, dnt_R2_freq_mean), "All_Genes", c("Neighbor_L2", "Neighbor_L1", "Neighbor_R1", "Neighbor_R2"), "yak", -11*4/75, 4, -2.5*4/75, -11*4/75, "Burst Frequency", unlist(lapply(c("L2", "L1", "R1", "R2"), function(x) paste("Burst Frequency in D. yakuba, ", x, " Neighbor", sep=""))), TRUE, mtx_freq_pval[1:4 + 1*4,], mtx_freq_N[1:4 + 1*4,], mtx_freq_N_ref[2,])
 
-dev.off()
+	p_freq_ana_list <- plot_neigh_mult(all_burst_freq_mean, list(dnt_L2_freq_mean, dnt_L1_freq_mean, dnt_R1_freq_mean, dnt_R2_freq_mean), "All_Genes", c("Neighbor_L2", "Neighbor_L1", "Neighbor_R1", "Neighbor_R2"), "ana", -11*7.5/75, 7.5, -2.5*7.5/75, -11*7.5/75, "Burst Frequency", unlist(lapply(c("L2", "L1", "R1", "R2"), function(x) paste("Burst Frequency in D. ananassae, ", x, " Neighbor", sep=""))), TRUE, mtx_freq_pval[1:4 + 2*4,], mtx_freq_N[1:4 + 2*4,], mtx_freq_N_ref[3,])
 
-svg("sc_liftoff/bursting/comb_freq_all_ana.svg", width=4*3.5*3.90, height=4*1, pointsize=3)
-grid.arrange(p_freq_ana_list[[1]], p_freq_ana_list[[2]], p_freq_ana_list[[3]], p_freq_ana_list[[4]], ncol=4)
+	grid.arrange(p_freq_mel_list[[1]], p_freq_mel_list[[2]], p_freq_mel_list[[3]], p_freq_mel_list[[4]], p_freq_yak_list[[1]], p_freq_yak_list[[2]], p_freq_yak_list[[3]], p_freq_yak_list[[4]], p_freq_ana_list[[1]], p_freq_ana_list[[2]], p_freq_ana_list[[3]], p_freq_ana_list[[4]], ncol=4)
 
-dev.off()
+	dev.off()
 
+
+	svg("sc_liftoff/bursting/comb_freq_all_mel.svg", width=4*3.5*3.90, height=4*1, pointsize=3)
+	grid.arrange(p_freq_mel_list[[1]], p_freq_mel_list[[2]], p_freq_mel_list[[3]], p_freq_mel_list[[4]], ncol=4)
+
+	dev.off()
+
+	svg("sc_liftoff/bursting/comb_freq_all_yak.svg", width=4*3.5*3.90, height=4*1, pointsize=3)
+	grid.arrange(p_freq_yak_list[[1]], p_freq_yak_list[[2]], p_freq_yak_list[[3]], p_freq_yak_list[[4]], ncol=4)
+
+	dev.off()
+
+	svg("sc_liftoff/bursting/comb_freq_all_ana.svg", width=4*3.5*3.90, height=4*1, pointsize=3)
+	grid.arrange(p_freq_ana_list[[1]], p_freq_ana_list[[2]], p_freq_ana_list[[3]], p_freq_ana_list[[4]], ncol=4)
+
+	dev.off()
+}
 #run dedup.py
 #run svgo on all svgs
 
@@ -807,51 +897,53 @@ p_y_l1_es <- data.frame(vals=c(paired_yak_L1_e_spermatocyte[[1]], paired_yak_L1_
 paired_yak_L1_l_spermatocyte <- extract_paired(all_burst_size_mean, dnt_L1_size_mean, "yak", "Late_spermatocyte")
 p_y_l1_ls <- data.frame(vals=c(paired_yak_L1_l_spermatocyte[[1]], paired_yak_L1_l_spermatocyte[[2]]), sourc=factor(c(rep("All Genes", length(paired_yak_L1_l_spermatocyte[[1]])), rep("L1 Neighbor", length(paired_yak_L1_l_spermatocyte[[2]]))), levels=c("L1 Neighbor", "All Genes")))
 
-png("sc_liftoff/bursting/comb_sigs_dens.png", width=2400*3, height=2400*3, res=600, pointsize=3)
-p1 <- ggplot(p_m_l1_es, aes(x=vals, fill=sourc)) + geom_density(alpha=0.4, outline.type = "full", adjust=1/2, n=2^13) + scale_x_continuous(limits=c(0,575)) + coord_cartesian(xlim=c(0, 70))
-p2 <- ggplot(p_y_l1_es, aes(x=vals, fill=sourc)) + geom_density(alpha=0.4, outline.type = "full", adjust=1/2, n=2^13) + scale_x_continuous(limits=c(0,575)) + coord_cartesian(xlim=c(0, 35))
-p3 <- ggplot(p_y_l1_ls, aes(x=vals, fill=sourc)) + geom_density(alpha=0.4, outline.type = "full", adjust=1/2, n=2^13) + scale_x_continuous(limits=c(0,575)) + coord_cartesian(xlim=c(0, 15))
-grid.arrange(p1, p2, p3, ncol=1)
-dev.off()
+if(plot_new){
+	png("sc_liftoff/bursting/comb_sigs_dens.png", width=2400*3, height=2400*3, res=600, pointsize=3)
+	p1 <- ggplot(p_m_l1_es, aes(x=vals, fill=sourc)) + geom_density(alpha=0.4, outline.type = "full", adjust=1/2, n=2^13) + scale_x_continuous(limits=c(0,575)) + coord_cartesian(xlim=c(0, 70))
+	p2 <- ggplot(p_y_l1_es, aes(x=vals, fill=sourc)) + geom_density(alpha=0.4, outline.type = "full", adjust=1/2, n=2^13) + scale_x_continuous(limits=c(0,575)) + coord_cartesian(xlim=c(0, 35))
+	p3 <- ggplot(p_y_l1_ls, aes(x=vals, fill=sourc)) + geom_density(alpha=0.4, outline.type = "full", adjust=1/2, n=2^13) + scale_x_continuous(limits=c(0,575)) + coord_cartesian(xlim=c(0, 15))
+	grid.arrange(p1, p2, p3, ncol=1)
+	dev.off()
 
 
-svg("sc_liftoff/bursting/comb_sigs_dens.svg", width=4*3, height=4*3, pointsize=3)
-p1 <- ggplot(p_m_l1_es, aes(x=vals, fill=sourc)) + geom_density(alpha=0.4, outline.type = "full", adjust=1/2, n=2^13) + scale_x_continuous(limits=c(0,575)) + coord_cartesian(xlim=c(0, 70))
-p1 <- p1 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	svg("sc_liftoff/bursting/comb_sigs_dens.svg", width=4*3, height=4*3, pointsize=3)
+	p1 <- ggplot(p_m_l1_es, aes(x=vals, fill=sourc)) + geom_density(alpha=0.4, outline.type = "full", adjust=1/2, n=2^13) + scale_x_continuous(limits=c(0,575)) + coord_cartesian(xlim=c(0, 70))
+	p1 <- p1 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
 
-p2 <- ggplot(p_y_l1_es, aes(x=vals, fill=sourc)) + geom_density(alpha=0.4, outline.type = "full", adjust=1/2, n=2^13) + scale_x_continuous(limits=c(0,575)) + coord_cartesian(xlim=c(0, 35))
-p2 <- p2 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	p2 <- ggplot(p_y_l1_es, aes(x=vals, fill=sourc)) + geom_density(alpha=0.4, outline.type = "full", adjust=1/2, n=2^13) + scale_x_continuous(limits=c(0,575)) + coord_cartesian(xlim=c(0, 35))
+	p2 <- p2 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
 
-p3 <- ggplot(p_y_l1_ls, aes(x=vals, fill=sourc)) + geom_density(alpha=0.4, outline.type = "full", adjust=1/2, n=2^13) + scale_x_continuous(limits=c(0,575)) + coord_cartesian(xlim=c(0, 15))
-p3 <- p3 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	p3 <- ggplot(p_y_l1_ls, aes(x=vals, fill=sourc)) + geom_density(alpha=0.4, outline.type = "full", adjust=1/2, n=2^13) + scale_x_continuous(limits=c(0,575)) + coord_cartesian(xlim=c(0, 15))
+	p3 <- p3 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
 
-grid.arrange(p1, p2, p3, ncol=1)
-dev.off()
+	grid.arrange(p1, p2, p3, ncol=1)
+	dev.off()
 
 
-png("sc_liftoff/bursting/comb_size_zoom.png", width=2400*3.5*3.90/2, height=2400*3, res=600, pointsize=3)
+	png("sc_liftoff/bursting/comb_size_zoom.png", width=2400*3.5*3.90/2, height=2400*3, res=600, pointsize=3)
 
-p_size_mel_list1 <- plot_neigh_mult(all_burst_size_mean, list(dnt_L2_size_mean, dnt_L1_size_mean, dnt_R1_size_mean, dnt_R2_size_mean), "All_Genes", c("Neighbor_L2", "Neighbor_L1", "Neighbor_R1", "Neighbor_R2"), "mel", -11*40/75, 40, -2.5*40/75, -11*45/75, "Burst Size", unlist(lapply(c("L2", "L1", "R1", "R2"), function(x) paste("Burst Size in D. melanogaster, ", x, " Neighbor", sep=""))), TRUE, mtx_size_pval[1:4,], mtx_size_N[1:4,], mtx_size_N_ref[1,])
+	p_size_mel_list1 <- plot_neigh_mult(all_burst_size_mean, list(dnt_L2_size_mean, dnt_L1_size_mean, dnt_R1_size_mean, dnt_R2_size_mean), "All_Genes", c("Neighbor_L2", "Neighbor_L1", "Neighbor_R1", "Neighbor_R2"), "mel", -11*40/75, 40, -2.5*40/75, -11*45/75, "Burst Size", unlist(lapply(c("L2", "L1", "R1", "R2"), function(x) paste("Burst Size in D. melanogaster, ", x, " Neighbor", sep=""))), TRUE, mtx_size_pval[1:4,], mtx_size_N[1:4,], mtx_size_N_ref[1,])
 
-p_size_yak_list1 <- plot_neigh_mult(all_burst_size_mean, list(dnt_L2_size_mean, dnt_L1_size_mean, dnt_R1_size_mean, dnt_R2_size_mean), "All_Genes", c("Neighbor_L2", "Neighbor_L1", "Neighbor_R1", "Neighbor_R2"), "yak", -11*23.5/75, 23.5, -2.5*23.5/75, -11*23.5/75, "Burst Size", unlist(lapply(c("L2", "L1", "R1", "R2"), function(x) paste("Burst Size in D. yakuba, ", x, " Neighbor", sep=""))), TRUE, mtx_size_pval[1:4 + 1*4,], mtx_size_N[1:4 + 1*4,], mtx_size_N_ref[2,])
+	p_size_yak_list1 <- plot_neigh_mult(all_burst_size_mean, list(dnt_L2_size_mean, dnt_L1_size_mean, dnt_R1_size_mean, dnt_R2_size_mean), "All_Genes", c("Neighbor_L2", "Neighbor_L1", "Neighbor_R1", "Neighbor_R2"), "yak", -11*23.5/75, 23.5, -2.5*23.5/75, -11*23.5/75, "Burst Size", unlist(lapply(c("L2", "L1", "R1", "R2"), function(x) paste("Burst Size in D. yakuba, ", x, " Neighbor", sep=""))), TRUE, mtx_size_pval[1:4 + 1*4,], mtx_size_N[1:4 + 1*4,], mtx_size_N_ref[2,])
 
-p_size_yak_list2 <- plot_neigh_mult(all_burst_size_mean, list(dnt_L2_size_mean, dnt_L1_size_mean, dnt_R1_size_mean, dnt_R2_size_mean), "All_Genes", c("Neighbor_L2", "Neighbor_L1", "Neighbor_R1", "Neighbor_R2"), "yak", -11*10/75, 10, -2.5*10/75, -11*10/75, "Burst Size", unlist(lapply(c("L2", "L1", "R1", "R2"), function(x) paste("Burst Size in D. yakuba, ", x, " Neighbor", sep=""))), TRUE, mtx_size_pval[1:4 + 1*4,], mtx_size_N[1:4 + 1*4,], mtx_size_N_ref[2,])
+	p_size_yak_list2 <- plot_neigh_mult(all_burst_size_mean, list(dnt_L2_size_mean, dnt_L1_size_mean, dnt_R1_size_mean, dnt_R2_size_mean), "All_Genes", c("Neighbor_L2", "Neighbor_L1", "Neighbor_R1", "Neighbor_R2"), "yak", -11*10/75, 10, -2.5*10/75, -11*10/75, "Burst Size", unlist(lapply(c("L2", "L1", "R1", "R2"), function(x) paste("Burst Size in D. yakuba, ", x, " Neighbor", sep=""))), TRUE, mtx_size_pval[1:4 + 1*4,], mtx_size_N[1:4 + 1*4,], mtx_size_N_ref[2,])
 
-grid.arrange(p_size_mel_list1[[2]], p_size_yak_list1[[2]], p_size_yak_list2[[2]], ncol=1)
+	grid.arrange(p_size_mel_list1[[2]], p_size_yak_list1[[2]], p_size_yak_list2[[2]], ncol=1)
 
-dev.off()
+	dev.off()
 
-svg("sc_liftoff/bursting/comb_size_zoom.svg", width=27.3, height=12, pointsize=3)
+	svg("sc_liftoff/bursting/comb_size_zoom.svg", width=27.3, height=12, pointsize=3)
 
-grid.arrange(p_size_mel_list1[[2]], p_size_yak_list1[[2]], p_size_yak_list2[[2]], ncol=1)
+	grid.arrange(p_size_mel_list1[[2]], p_size_yak_list1[[2]], p_size_yak_list2[[2]], ncol=1)
 
-dev.off()
+	dev.off()
 
-pdf("sc_liftoff/bursting/comb_size_zoom.pdf", width=27.3, height=12, pointsize=3)
+	pdf("sc_liftoff/bursting/comb_size_zoom.pdf", width=27.3, height=12, pointsize=3)
 
-grid.arrange(p_size_mel_list1[[2]], p_size_yak_list1[[2]], p_size_yak_list2[[2]], ncol=1)
+	grid.arrange(p_size_mel_list1[[2]], p_size_yak_list1[[2]], p_size_yak_list2[[2]], ncol=1)
 
-dev.off()
+	dev.off()
+}
 
 #X:A
 mel_symb_autosome <- unlist(lapply(mel_gtf[which(mel_gtf[,1] %in% c("2L", "2R", "3L", "3R", "4")),9], function(x) extract_genesymbol(x)))
@@ -868,47 +960,49 @@ x_burst <- gen_burst_table(mel_symb_x_pcg, summary_all_freq_mean, summary_all_si
 x_burst_freq_mean <- x_burst[[1]]
 x_burst_size_mean <- x_burst[[2]]
 
-# png("sc_liftoff/bursting/burst_size_mel_x_to_a.png", width=2400*3.5, height=2400, res=600, pointsize=3)
+png("sc_liftoff/bursting/burst_size_mel_x_to_a.png", width=2400*3.5, height=2400, res=600, pointsize=3)
 p_xa_size_mel <- plot_ind(autosome_burst_size_mean, x_burst_size_mean, "Autosomal", "X_linked", "mel", 0, 40, "Burst Size", "Burst Size in D. melanogaster, X:A", TRUE)
-# p_xa_size_mel
-# dev.off()
+p_xa_size_mel
+dev.off()
 
-# png("sc_liftoff/bursting/burst_freq_mel_x_to_a.png", width=2400*3.5, height=2400, res=600, pointsize=3)
+png("sc_liftoff/bursting/burst_freq_mel_x_to_a.png", width=2400*3.5, height=2400, res=600, pointsize=3)
 p_xa_freq_mel <- plot_ind(autosome_burst_freq_mean, x_burst_freq_mean, "Autosomal", "X_linked", "mel", 0, 10, "Burst Frequency", "Burst Frequency in D. melanogaster, X:A", TRUE)
-# p_xa_freq_mel
-# dev.off()
+p_xa_freq_mel
+dev.off()
 
-# png("sc_liftoff/bursting/burst_size_yak_x_to_a.png", width=2400*3.5, height=2400, res=600, pointsize=3)
+png("sc_liftoff/bursting/burst_size_yak_x_to_a.png", width=2400*3.5, height=2400, res=600, pointsize=3)
 p_xa_size_yak <- plot_ind(autosome_burst_size_mean, x_burst_size_mean, "Autosomal", "X_linked", "yak", 0, 85, "Burst Size", "Burst Size in D. yakuba, X:A", TRUE)
-# p_xa_size_yak
-# dev.off()
+p_xa_size_yak
+dev.off()
 
-# png("sc_liftoff/bursting/burst_freq_yak_x_to_a.png", width=2400*3.5, height=2400, res=600, pointsize=3)
+png("sc_liftoff/bursting/burst_freq_yak_x_to_a.png", width=2400*3.5, height=2400, res=600, pointsize=3)
 p_xa_freq_yak <- plot_ind(autosome_burst_freq_mean, x_burst_freq_mean, "Autosomal", "X_linked", "yak", 0, 4, "Burst Frequency", "Burst Frequency in D. yakuba, X:A", TRUE)
-# p_xa_freq_yak 
-# dev.off()
+p_xa_freq_yak 
+dev.off()
 
-# png("sc_liftoff/bursting/burst_size_ana_x_to_a.png", width=2400*3.5, height=2400, res=600, pointsize=3)
+png("sc_liftoff/bursting/burst_size_ana_x_to_a.png", width=2400*3.5, height=2400, res=600, pointsize=3)
 p_xa_size_ana <- plot_ind(autosome_burst_size_mean, x_burst_size_mean, "Autosomal", "X_linked", "ana", 0, 6, "Burst Size", "Burst Size in D. ananassae, X:A", TRUE)
-# p_xa_size_ana
-# dev.off()
+p_xa_size_ana
+dev.off()
 
-# png("sc_liftoff/bursting/burst_freq_ana_x_to_a.png", width=2400*3.5, height=2400, res=600, pointsize=3)
+png("sc_liftoff/bursting/burst_freq_ana_x_to_a.png", width=2400*3.5, height=2400, res=600, pointsize=3)
 p_xa_freq_ana <- plot_ind(autosome_burst_freq_mean, x_burst_freq_mean, "Autosomal", "X_linked", "ana", 0, 7.5, "Burst Frequency", "Burst Frequency in D. ananassae, X:A", TRUE)
-# p_xa_freq_ana
-# dev.off()
-
-png("sc_liftoff/bursting/comb_xa_all.png", width=2400*3.5*3.90/2, height=2400*3, res=600, pointsize=3)
-
-grid.arrange(p_xa_size_mel, p_xa_freq_mel, p_xa_size_yak, p_xa_freq_yak, p_xa_size_ana, p_xa_freq_ana, ncol=2)
-
+p_xa_freq_ana
 dev.off()
 
-svg("sc_liftoff/bursting/comb_xa_all.svg", width=27.3, height=12, pointsize=3)
+	if(plot_new){
+	png("sc_liftoff/bursting/comb_xa_all.png", width=2400*3.5*3.90/2, height=2400*3, res=600, pointsize=3)
 
-grid.arrange(p_xa_size_mel, p_xa_freq_mel, p_xa_size_yak, p_xa_freq_yak, p_xa_size_ana, p_xa_freq_ana, ncol=2)
+	grid.arrange(p_xa_size_mel, p_xa_freq_mel, p_xa_size_yak, p_xa_freq_yak, p_xa_size_ana, p_xa_freq_ana, ncol=2)
 
-dev.off()
+	dev.off()
+
+	svg("sc_liftoff/bursting/comb_xa_all.svg", width=27.3, height=12, pointsize=3)
+
+	grid.arrange(p_xa_size_mel, p_xa_freq_mel, p_xa_size_yak, p_xa_freq_yak, p_xa_size_ana, p_xa_freq_ana, ncol=2)
+
+	dev.off()
+}
 
 dat_size_x_list <- list(x_burst_size_mean)
 dat_freq_x_list <- list(x_burst_freq_mean)
@@ -948,54 +1042,87 @@ colnames(mtx_freq_pval_xa) <- cell_type_vec
 colnames(mtx_freq_N_xa) <- cell_type_vec
 colnames(mtx_freq_Nref_xa) <- cell_type_vec
 
-write.csv(mtx_size_pval_xa, file="sc_liftoff/bursting/mtx_size_pval_xa.csv")
-write.csv(mtx_freq_pval_xa, file="sc_liftoff/bursting/mtx_freq_pval_xa.csv")
-write.csv(mtx_size_N_xa, file="sc_liftoff/bursting/mtx_size_N_xa.csv")
-write.csv(mtx_freq_N_xa, file="sc_liftoff/bursting/mtx_freq_N_xa.csv")
-write.csv(mtx_size_Nref_xa, file="sc_liftoff/bursting/mtx_size_Nref_xa.csv")
-write.csv(mtx_freq_Nref_xa, file="sc_liftoff/bursting/mtx_freq_Nref_xa.csv")
+if(plot_new){
+	write.csv(mtx_size_pval_xa, file="sc_liftoff/bursting/mtx_size_pval_xa.csv")
+	write.csv(mtx_freq_pval_xa, file="sc_liftoff/bursting/mtx_freq_pval_xa.csv")
+	write.csv(mtx_size_N_xa, file="sc_liftoff/bursting/mtx_size_N_xa.csv")
+	write.csv(mtx_freq_N_xa, file="sc_liftoff/bursting/mtx_freq_N_xa.csv")
+	write.csv(mtx_size_Nref_xa, file="sc_liftoff/bursting/mtx_size_Nref_xa.csv")
+	write.csv(mtx_freq_Nref_xa, file="sc_liftoff/bursting/mtx_freq_Nref_xa.csv")
+}
 
 bh_size_xa <- benj_hoch(mtx_size_pval_xa, 0.05)
 bh_freq_xa <- benj_hoch(mtx_freq_pval_xa, 0.05)
 
-write.csv(bh_size_xa, file="sc_liftoff/bursting/bh_size_xa.csv")
-write.csv(bh_freq_xa, file="sc_liftoff/bursting/bh_freq_xa.csv")
+if(plot_new){
+	write.csv(bh_size_xa, file="sc_liftoff/bursting/bh_size_xa.csv")
+	write.csv(bh_freq_xa, file="sc_liftoff/bursting/bh_freq_xa.csv")
 
 
-png("sc_liftoff/bursting/comb_xa_all_stats.png", width=2400*3.5*3.90/2, height=2400*3, res=600, pointsize=3)
+	png("sc_liftoff/bursting/comb_xa_all_stats.png", width=2400*3.5*3.90/2, height=2400*3, res=600, pointsize=3)
 
-p_xa_size_mel_stat <- plot_neigh(autosome_burst_size_mean, x_burst_size_mean, "Autosomal", "X_linked", "mel", -11*32/75, 32, -2.5*32/75, -11*32/75, "Burst Size", "Burst Size in D. melanogaster, X:A", TRUE, mtx_size_pval_xa[1,], mtx_size_N_xa[1,], mtx_size_Nref_xa[1,])
-p_xa_freq_mel_stat <- plot_neigh(autosome_burst_freq_mean, x_burst_freq_mean, "Autosomal", "X_linked", "mel", -11*7.2/75, 7.2, -2.5*7.2/75, -11*7.2/75, "Burst Frequency", "Burst Frequency in D. melanogaster, X:A", TRUE, mtx_freq_pval_xa[1,], mtx_freq_N_xa[1,], mtx_freq_Nref_xa[1,])
+	p_xa_size_mel_stat <- plot_neigh(autosome_burst_size_mean, x_burst_size_mean, "Autosomal", "X_linked", "mel", -11*32/75, 32, -2.5*32/75, -11*32/75, "Burst Size", "Burst Size in D. melanogaster, X:A", TRUE, mtx_size_pval_xa[1,], mtx_size_N_xa[1,], mtx_size_Nref_xa[1,])
+	p_xa_freq_mel_stat <- plot_neigh(autosome_burst_freq_mean, x_burst_freq_mean, "Autosomal", "X_linked", "mel", -11*7.2/75, 7.2, -2.5*7.2/75, -11*7.2/75, "Burst Frequency", "Burst Frequency in D. melanogaster, X:A", TRUE, mtx_freq_pval_xa[1,], mtx_freq_N_xa[1,], mtx_freq_Nref_xa[1,])
 
-p_xa_size_mel_stat <- p_xa_size_mel_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
-p_xa_freq_mel_stat <- p_xa_freq_mel_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	p_xa_size_mel_stat <- p_xa_size_mel_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	p_xa_freq_mel_stat <- p_xa_freq_mel_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
 
-p_xa_size_yak_stat <- plot_neigh(autosome_burst_size_mean, x_burst_size_mean, "Autosomal", "X_linked", "yak", -11*85/75, 85, -2.5*85/75, -11*85/75, "Burst Size", "Burst Size in D. yakuba, X:A", TRUE, mtx_size_pval_xa[2,], mtx_size_N_xa[2,], mtx_size_Nref_xa[2,])
-p_xa_freq_yak_stat <- plot_neigh(autosome_burst_freq_mean, x_burst_freq_mean, "Autosomal", "X_linked", "yak", -11*2.5/75, 2.5, -2.5*2.5/75, -11*2.5/75, "Burst Frequency", "Burst Frequency in D. yakuba, X:A", TRUE, mtx_freq_pval_xa[2,], mtx_freq_N_xa[2,], mtx_freq_Nref_xa[2,])
+	p_xa_size_yak_stat <- plot_neigh(autosome_burst_size_mean, x_burst_size_mean, "Autosomal", "X_linked", "yak", -11*85/75, 85, -2.5*85/75, -11*85/75, "Burst Size", "Burst Size in D. yakuba, X:A", TRUE, mtx_size_pval_xa[2,], mtx_size_N_xa[2,], mtx_size_Nref_xa[2,])
+	p_xa_freq_yak_stat <- plot_neigh(autosome_burst_freq_mean, x_burst_freq_mean, "Autosomal", "X_linked", "yak", -11*2.5/75, 2.5, -2.5*2.5/75, -11*2.5/75, "Burst Frequency", "Burst Frequency in D. yakuba, X:A", TRUE, mtx_freq_pval_xa[2,], mtx_freq_N_xa[2,], mtx_freq_Nref_xa[2,])
 
-p_xa_size_yak_stat <- p_xa_size_yak_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
-p_xa_freq_yak_stat <- p_xa_freq_yak_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	p_xa_size_yak_stat <- p_xa_size_yak_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	p_xa_freq_yak_stat <- p_xa_freq_yak_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
 
-p_xa_size_ana_stat <- plot_neigh(autosome_burst_size_mean, x_burst_size_mean, "Autosomal", "X_linked", "ana", -11*6/75+1.15, 6, -2.5*6/75+1.05, -11*6/75+1.15, "Burst Size", "Burst Size in D. ananassae, X:A", TRUE, mtx_size_pval_xa[3,], mtx_size_N_xa[3,], mtx_size_Nref_xa[3,])
-p_xa_freq_ana_stat <- plot_neigh(autosome_burst_freq_mean, x_burst_freq_mean, "Autosomal", "X_linked", "ana", -11*6/75, 6, -2.5*6/75, -11*6/75, "Burst Frequency", "Burst Frequency in D. ananassae, X:A", TRUE, mtx_freq_pval_xa[3,], mtx_freq_N_xa[3,], mtx_freq_Nref_xa[3,])
+	p_xa_size_ana_stat <- plot_neigh(autosome_burst_size_mean, x_burst_size_mean, "Autosomal", "X_linked", "ana", -11*6/75+1.15, 6, -2.5*6/75+1.05, -11*6/75+1.15, "Burst Size", "Burst Size in D. ananassae, X:A", TRUE, mtx_size_pval_xa[3,], mtx_size_N_xa[3,], mtx_size_Nref_xa[3,])
+	p_xa_freq_ana_stat <- plot_neigh(autosome_burst_freq_mean, x_burst_freq_mean, "Autosomal", "X_linked", "ana", -11*6/75, 6, -2.5*6/75, -11*6/75, "Burst Frequency", "Burst Frequency in D. ananassae, X:A", TRUE, mtx_freq_pval_xa[3,], mtx_freq_N_xa[3,], mtx_freq_Nref_xa[3,])
 
-p_xa_size_ana_stat <- p_xa_size_ana_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
-p_xa_freq_ana_stat <- p_xa_freq_ana_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
-
-
-grid.arrange(p_xa_size_mel_stat, p_xa_freq_mel_stat, p_xa_size_yak_stat, p_xa_freq_yak_stat, p_xa_size_ana_stat, p_xa_freq_ana_stat, ncol=2)
-
-dev.off()
-
-svg("sc_liftoff/bursting/comb_xa_all_stats.svg", width=27.3, height=12, pointsize=3)
+	p_xa_size_ana_stat <- p_xa_size_ana_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	p_xa_freq_ana_stat <- p_xa_freq_ana_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
 
 
+	grid.arrange(p_xa_size_mel_stat, p_xa_freq_mel_stat, p_xa_size_yak_stat, p_xa_freq_yak_stat, p_xa_size_ana_stat, p_xa_freq_ana_stat, ncol=2)
 
-grid.arrange(p_xa_size_mel_stat, p_xa_freq_mel_stat, p_xa_size_yak_stat, p_xa_freq_yak_stat, p_xa_size_ana_stat, p_xa_freq_ana_stat, ncol=2)
+	dev.off()
+
+	svg("sc_liftoff/bursting/comb_xa_all_stats.svg", width=27.3, height=12, pointsize=3)
+
+	grid.arrange(p_xa_size_mel_stat, p_xa_freq_mel_stat, p_xa_size_yak_stat, p_xa_freq_yak_stat, p_xa_size_ana_stat, p_xa_freq_ana_stat, ncol=2)
+
+	dev.off()
 
 
 
-dev.off()
+	svg("sc_liftoff/bursting/comb_xa_all_stats_ugg.svg", width=27.3, height=12, pointsize=3)
+
+	p_xa_size_mel_stat <- plot_neigh1(autosome_burst_size_mean, x_burst_size_mean, "Autosomal", "X_linked", "mel", -11*32/75, 32, -2.5*32/75, -11*32/75, "Burst Size", "Burst Size in D. melanogaster, X:A", TRUE, mtx_size_pval_xa[1,], mtx_size_N_xa[1,], mtx_size_Nref_xa[1,])
+	p_xa_freq_mel_stat <- plot_neigh1(autosome_burst_freq_mean, x_burst_freq_mean, "Autosomal", "X_linked", "mel", -11*7.2/75, 7.2, -2.5*7.2/75, -11*7.2/75, "Burst Frequency", "Burst Frequency in D. melanogaster, X:A", TRUE, mtx_freq_pval_xa[1,], mtx_freq_N_xa[1,], mtx_freq_Nref_xa[1,])
+
+	p_xa_size_mel_stat <- p_xa_size_mel_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	p_xa_freq_mel_stat <- p_xa_freq_mel_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+
+	p_xa_size_yak_stat <- plot_neigh1(autosome_burst_size_mean, x_burst_size_mean, "Autosomal", "X_linked", "yak", -11*85/75, 85, -2.5*85/75, -11*85/75, "Burst Size", "Burst Size in D. yakuba, X:A", TRUE, mtx_size_pval_xa[2,], mtx_size_N_xa[2,], mtx_size_Nref_xa[2,])
+	p_xa_freq_yak_stat <- plot_neigh1(autosome_burst_freq_mean, x_burst_freq_mean, "Autosomal", "X_linked", "yak", -11*2.5/75, 2.5, -2.5*2.5/75, -11*2.5/75, "Burst Frequency", "Burst Frequency in D. yakuba, X:A", TRUE, mtx_freq_pval_xa[2,], mtx_freq_N_xa[2,], mtx_freq_Nref_xa[2,])
+
+	p_xa_size_yak_stat <- p_xa_size_yak_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	p_xa_freq_yak_stat <- p_xa_freq_yak_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+
+	p_xa_size_ana_stat <- plot_neigh1(autosome_burst_size_mean, x_burst_size_mean, "Autosomal", "X_linked", "ana", -11*6/75+1.15, 6, -2.5*6/75+1.05, -11*6/75+1.15, "Burst Size", "Burst Size in D. ananassae, X:A", TRUE, mtx_size_pval_xa[3,], mtx_size_N_xa[3,], mtx_size_Nref_xa[3,])
+	p_xa_freq_ana_stat <- plot_neigh1(autosome_burst_freq_mean, x_burst_freq_mean, "Autosomal", "X_linked", "ana", -11*6/75, 6, -2.5*6/75, -11*6/75, "Burst Frequency", "Burst Frequency in D. ananassae, X:A", TRUE, mtx_freq_pval_xa[3,], mtx_freq_N_xa[3,], mtx_freq_Nref_xa[3,])
+
+	p_xa_size_ana_stat <- p_xa_size_ana_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	p_xa_freq_ana_stat <- p_xa_freq_ana_stat + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+
+
+	# png("sc_liftoff/bursting/comb_xa_all_stats_ugg1.png", width=27.3, height=12, units="in", res=300)
+
+	grid.arrange(p_xa_size_mel_stat, p_xa_freq_mel_stat, p_xa_size_yak_stat, p_xa_freq_yak_stat, p_xa_size_ana_stat, p_xa_freq_ana_stat, ncol=2)
+
+
+
+	dev.off()
+}
+
+
 
 
 gg_color_hue <- function(n) {
@@ -1009,20 +1136,20 @@ ct_cols <- col_wheel[c(7, 3, 6, 2, 5, 1, 4, 8)]
 
 ct_cols1 <- ct_cols[1:7]			
 ct_cols2 <- ct_cols[1:7]			
-ct_cols3 <- ct_cols[c(1:5, 8)]			
+ct_cols3 <- ct_cols[1:7]			
 
 
 
 
 src <- factor(c(rep("N total", 7), rep("N X-linked", 7), rep("N Autosomal", 7)), levels=c("N total", "N X-linked", "N Autosomal"))
-src1 <- factor(c(rep("N total", 6), rep("N X-linked", 6), rep("N Autosomal", 6)), levels=c("N total", "N X-linked", "N Autosomal"))
+src1 <- factor(c(rep("N total", 7), rep("N X-linked", 7), rep("N Autosomal", 7)), levels=c("N total", "N X-linked", "N Autosomal"))
 
 nm <- c(mtx_size_N_ref[1,-8], mtx_size_N_xa[1,-8], mtx_size_Nref_xa[1,-8])
 ny <- c(mtx_size_N_ref[2,-8], mtx_size_N_xa[2,-8], mtx_size_Nref_xa[2,-8])
-ena <-  c(mtx_size_N_ref[3,-c(6,7)], mtx_size_N_xa[1,-c(6,7)], mtx_size_Nref_xa[3,-c(6,7)])
+ena <-  c(mtx_size_N_ref[3,-4], mtx_size_N_xa[1,-4], mtx_size_Nref_xa[3,-4])
 
 ceetee <- rep(colnames(mtx_size_N)[-8], 3)
-ceetee1 <- rep(colnames(mtx_size_N)[-c(6,7)], 3)
+ceetee1 <- rep(colnames(mtx_size_N)[-4], 3)
 
 ceetee[which(ceetee == "GSC_Early_spermatogonia")] <- "GSC/Early Spermatogonia"
 ceetee[which(ceetee == "Late_spermatogonia")] <- "Late Spermatogonia"
@@ -1035,137 +1162,329 @@ ceetee1[which(ceetee1 == "GSC_Early_spermatogonia")] <- "GSC/Early Spermatogonia
 ceetee1[which(ceetee1 == "Late_spermatogonia")] <- "Late Spermatogonia"
 ceetee1[which(ceetee1 == "Early_spermatocyte")] <- "Early Spermatocyte"
 ceetee1[which(ceetee1 == "Late_spermatocyte")] <- "Late Spermatocyte"
-ceetee1[which(ceetee1 == "ananassae_spermatid")] <- "ananassae Spermatid"
-
+ceetee1[which(ceetee1 == "ananassae_spermatid")] <- "ananassae Spermatocyte"
+ceetee1[which(ceetee1 == "Early_spermatid")] <- "Early Spermatid"
+ceetee1[which(ceetee1 == "Late_spermatid")] <- "Late Spermatid"
 
 ceetee <- factor(ceetee, levels=c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "Early Spermatocyte", "Late Spermatocyte", "Early Spermatid", "Late Spermatid"))
-ceetee1 <- factor(ceetee1, levels=c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "Early Spermatocyte", "Late Spermatocyte", "ananassae Spermatid"))
+ceetee1 <- factor(ceetee1, levels=c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "ananassae Spermatocyte", "Late Spermatocyte", "Early Spermatid", "Late Spermatid"))
 
 df_N_mel <- data.frame(nm, src, ceetee)
 df_N_yak <- data.frame(ny, src, ceetee)
 df_N_ana <- data.frame(ena, src1, ceetee1)
 
+if(plot_new){
+	png("sc_liftoff/bursting/N_boxes.png", width=2400*4, height=3600*1.5, res=600, pointsize=3)
 
-png("sc_liftoff/bursting/N_boxes.png", width=2400*4, height=3600*1.5, res=600, pointsize=3)
+	p1 <- ggplot(df_N_mel, aes(x=ceetee, y=nm, fill=src), outlier.shape = NA) + geom_bar(position="dodge", stat="identity", color="black") + ylab("N") + xlab("Cell Type") + ggtitle("melanogaster")
+	p1 <- p1 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
 
-p1 <- ggplot(df_N_mel, aes(x=ceetee, y=nm, fill=src), outlier.shape = NA) + geom_bar(position="dodge", stat="identity", color="black") + ylab("N") + xlab("Cell Type") + ggtitle("melanogaster")
-p1 <- p1 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	p2 <- ggplot(df_N_yak, aes(x=ceetee, y=ny, fill=src), outlier.shape = NA) + geom_bar(position="dodge", stat="identity", color="black") + ylab("N") + xlab("Cell Type") + ggtitle("yakuba")
+	p2 <- p2 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
 
-p2 <- ggplot(df_N_yak, aes(x=ceetee, y=ny, fill=src), outlier.shape = NA) + geom_bar(position="dodge", stat="identity", color="black") + ylab("N") + xlab("Cell Type") + ggtitle("yakuba")
-p2 <- p2 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	p3 <- ggplot(df_N_ana, aes(x=ceetee1, y=ena, fill=src1), outlier.shape = NA) + geom_bar(position="dodge", stat="identity", color="black") + ylab("N") + xlab("Cell Type") + ggtitle("ananassae")
+	p3 <- p3 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
 
-p3 <- ggplot(df_N_ana, aes(x=ceetee1, y=ena, fill=src1), outlier.shape = NA) + geom_bar(position="dodge", stat="identity", color="black") + ylab("N") + xlab("Cell Type") + ggtitle("ananassae")
-p3 <- p3 + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+	grid.arrange(p1, p2, p3, ncol=1)
 
-grid.arrange(p1, p2, p3, ncol=1)
+	dev.off()
 
-dev.off()
+	svg("sc_liftoff/bursting/N_boxes.svg", width=16, height=9, pointsize=3)
 
-svg("sc_liftoff/bursting/N_boxes.svg", width=16, height=9, pointsize=3)
+	grid.arrange(p1, p2, p3, ncol=1)
 
-grid.arrange(p1, p2, p3, ncol=1)
-
-dev.off()
-
-
-
-
-
-
-
-
-plot_ind1 <- function(in_mat, exp_mat, in_mat_lab, exp_mat_lab, whi_spec, y_low, y_high, ylabel, in_title, fix_ana=FALSE){
-	this_dat <- format_df(in_mat, exp_mat, in_mat_lab, exp_mat_lab)	
-	this_dat <- this_dat[which(this_dat[,"spec"] == whi_spec),]
-	
-	ct <- this_dat$cell_type
-	ct[which(ct == "GSC_Early_spermatogonia")] <- "GSC/Early Spermatogonia"
-	ct[which(ct == "Late_spermatogonia")] <- "Late Spermatogonia"
-	ct[which(ct == "Early_spermatocyte")] <- "Early Spermatocyte"
-	ct[which(ct == "Late_spermatocyte")] <- "Late Spermatocyte"
-	ct[which(ct == "Early_spermatid")] <- "Early Spermatid"
-	ct[which(ct == "Late_spermatid")] <- "Late Spermatid"
-	ct[which(ct == "ananassae_spermatid")] <- "ananassae Spermatid"
-	
-	stat <- this_dat$status
-	stat[which(stat == "All_Genes")] <- "All Genes"
-	stat[which(stat == "Neighbor_L2")] <- "Neighbor L2"
-	stat[which(stat == "Neighbor_L1")] <- "Neighbor L1"
-	stat[which(stat == "Neighbor_R1")] <- "Neighbor R1"
-	stat[which(stat == "Neighbor_R2")] <- "Neighbor R2"
-	stat[which(stat == "X_linked")] <- "X Linked"
-	stat[which(stat == "Autosomal")] <- "Autosomal"
-	
-	this_dat$cell_type <- factor(ct, levels=c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "Early Spermatocyte", "Late Spermatocyte", "Early Spermatid", "Late Spermatid", "ananassae Spermatid"))
-	
-	this_dat$status <- factor(stat, levels=c("Neighbor L2", "Neighbor L1", "Neighbor R1", "Neighbor R2", "All Genes", "X Linked", "Autosomal"))
-	
-	if(fix_ana){
-		if(whi_spec %in% c("mel", "yak")){
-			this_dat <- subset(this_dat, cell_type %in% c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "Early Spermatocyte", "Late Spermatocyte", "Early Spermatid", "Late Spermatid"))
-		}
-
-		if(whi_spec == "ana"){
-			this_dat <- subset(this_dat, cell_type %in% c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "Early Spermatocyte", "Late Spermatocyte", "ananassae Spermatid"))
-			this_dat$cell_type <- factor(this_dat$cell_type, levels=c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "Early Spermatocyte", "Late Spermatocyte", "ananassae Spermatid", ""))
-			
-			ct_cols <- ct_cols[c(1:5, 8)]			
-			this_labs <- factor(c("Somatic", "GSC/Early Spermatogonia", "Late Spermatogonia", "Early Spermatocyte", "Late Spermatocyte", "ananassae Spermatid", ""))
-						
-			return(ggplot(this_dat, aes(x=cell_type, y=parameter), outlier.shape = NA) + geom_boxplot(fill=ct_cols) + scale_x_discrete("cell_type", breaks=this_labs, drop=FALSE) + coord_cartesian(ylim=c(y_low, y_high)) + ylab(ylabel) + xlab("Cell Type") + labs(fill="Gene Set") + ggtitle(in_title))
-		}
-		# ct <- subset(ct, 
-	
-	}
-	
-	ggplot(this_dat, aes(x=cell_type, y=parameter, fill=status), outlier.shape = NA) + geom_boxplot() + coord_cartesian(ylim=c(y_low, y_high)) + ylab(ylabel) + xlab("Cell Type") + labs(fill="Gene Set") + ggtitle(in_title)
+	dev.off()
 }
 
+dnt_dat_plus <- read.csv("sc_liftoff/dnt_dat_plus.csv")
+
+all_burst_size_mel <- all_burst_size_mean[all_burst_size_mean[,3] == "mel",]
+all_burst_size_yak <- all_burst_size_mean[all_burst_size_mean[,3] == "yak",]
+all_burst_size_ana <- all_burst_size_mean[all_burst_size_mean[,3] == "ana",]
+
+all_burst_freq_mel <- all_burst_freq_mean[all_burst_freq_mean[,3] == "mel",]
+all_burst_freq_yak <- all_burst_freq_mean[all_burst_freq_mean[,3] == "yak",]
+all_burst_freq_ana <- all_burst_freq_mean[all_burst_freq_mean[,3] == "ana",]
+
+png("sc_liftoff/test.png")
+hist(unlist(all_burst_size_mel[,4:11]))
+dev.off()
 
 
-plot_neigh1 <- function(dat_1, dat_2, lab_1, lab_2, lab_spec, y_low, y_high, y_signif, y_locn, lab_ylab, lab_mainlab, ana_fix, pv_vals, n_vals_1, n_vals_2){
-	idxs <- 1:length(n_vals_1)
-	xs_idx <- 0:(length(n_vals_1)-1)
-	if(ana_fix && lab_spec %in% c("mel", "yak")){
-		idxs <- 1:7
-		xs_idx <- 0:6
-	}
-	if(ana_fix && lab_spec == "ana"){
-		idxs <- c(1:5, 8)
-		xs_idx <- 0:5
+library(actuar)
+library(fitdistr)
+
+
+
+pareto_mtx <- function(x, shape, scale){
+	return(x)
+	out <- matrix(0, nrow=nrow(x), ncol=ncol(x))
+	
+	for(i in 1:ncol(out)){
+		out[,i] <- ppareto(x[,i], shape, scale)
 	}
 	
-	vec_n_1 <- n_vals_1[idxs]
-	vec_n_2 <- n_vals_2[idxs]
-	vec_pv <- pv_vals[idxs]
-	
-	output <- plot_ind1(dat_1, dat_2, lab_1, lab_2, lab_spec, y_low, y_high, lab_ylab, lab_mainlab, ana_fix)
-	output <- output + geom_signif(y_position=rep(y_signif, length(idxs)), xmin=xs_idx + 0.8, xmax=xs_idx + 1.2, annotation=get_pval_stars(vec_pv), tip_length=0, vjust=2) 
-	output <- add_N_labs(output, xs_idx + 0.75, rep(y_locn, length(idxs)), vec_n_1)
-	output <- add_N_labs(output, xs_idx + 1.25, rep(y_locn, length(idxs)), vec_n_2)
-
-	return(output)
+	return(out)
 }
 
-png("sc_liftoff/bursting/comb_xa_all_stats.png", width=2400*3.5*3.90/2, height=2400*3, res=600, pointsize=3)
+mtx_uniques <- function(in_mat, genes){
+	out <- in_mat
+	out <- out[match(genes, in_mat[,1]),]
+	out <- out[!is.na(out[,1]),]
+		
+	return(out)
 
-p_xa_size_mel_stat <- plot_neigh(autosome_burst_size_mean, x_burst_size_mean, "Autosomal", "X_linked", "mel", -11*32/75, 32, -2.5*32/75, -11*32/75, "Burst Size", "Burst Size in D. melanogaster, X:A", TRUE, mtx_size_pval_xa[1,], mtx_size_N_xa[1,], mtx_size_Nref_xa[1,])
-p_xa_freq_mel_stat <- plot_neigh(autosome_burst_freq_mean, x_burst_freq_mean, "Autosomal", "X_linked", "mel", -11*7.2/75, 7.2, -2.5*7.2/75, -11*7.2/75, "Burst Frequency", "Burst Frequency in D. melanogaster, X:A", TRUE, mtx_freq_pval_xa[1,], mtx_freq_N_xa[1,], mtx_freq_Nref_xa[1,])
+}
 
-p_xa_size_yak_stat <- plot_neigh(autosome_burst_size_mean, x_burst_size_mean, "Autosomal", "X_linked", "yak", -11*85/75, 85, -2.5*85/75, -11*85/75, "Burst Size", "Burst Size in D. yakuba, X:A", TRUE, mtx_size_pval_xa[2,], mtx_size_N_xa[2,], mtx_size_Nref_xa[2,])
-p_xa_freq_yak_stat <- plot_neigh(autosome_burst_freq_mean, x_burst_freq_mean, "Autosomal", "X_linked", "yak", -11*2.5/75, 2.5, -2.5*2.5/75, -11*2.5/75, "Burst Frequency", "Burst Frequency in D. yakuba, X:A", TRUE, mtx_freq_pval_xa[2,], mtx_freq_N_xa[2,], mtx_freq_Nref_xa[2,])
+common_genes <- intersect(all_burst_size_mel[,1], intersect(all_burst_size_yak[,1], all_burst_size_ana[,1]))
+common_genes <- intersect(common_genes, mel_onlygenes)
 
-p_xa_size_ana_stat <- plot_neigh(autosome_burst_size_mean, x_burst_size_mean, "Autosomal", "X_linked", "ana", -11*6/75+1.15, 6, -2.5*6/75+1.05, -11*6/75+1.15, "Burst Size", "Burst Size in D. ananassae, X:A", TRUE, mtx_size_pval_xa[3,], mtx_size_N_xa[3,], mtx_size_Nref_xa[3,])
-p_xa_freq_ana_stat <- plot_neigh(autosome_burst_freq_mean, x_burst_freq_mean, "Autosomal", "X_linked", "ana", -11*6/75, 6, -2.5*6/75, -11*6/75, "Burst Frequency", "Burst Frequency in D. ananassae, X:A", TRUE, mtx_freq_pval_xa[3,], mtx_freq_N_xa[3,], mtx_freq_Nref_xa[3,])
+burst_size_mel_pareto <- mtx_uniques(all_burst_size_mel, common_genes)
+dist_mel_size <- unlist(burst_size_mel_pareto[,4:11])
+dist_mel_size <- dist_mel_size[dist_mel_size >= 1]
+fit.gamma_mel_size <- fitdist(dist_mel_size, distr="pareto", method="mle")
+burst_size_mel_pareto[, 4:11] <- pareto_mtx(burst_size_mel_pareto[,4:11], fit.gamma_mel_size$estimate["shape"], fit.gamma_mel_size$estimate["scale"])
 
-grid.arrange(p_xa_size_mel_stat, p_xa_freq_mel_stat, p_xa_size_yak_stat, p_xa_freq_yak_stat, p_xa_size_ana_stat, p_xa_freq_ana_stat, ncol=2)
+burst_size_yak_pareto <- mtx_uniques(all_burst_size_yak, common_genes)
+dist_yak_size <- unlist(burst_size_yak_pareto[,4:11])
+dist_yak_size <- dist_yak_size[dist_yak_size >= 1]
+fit.gamma_yak_size <- fitdist(dist_yak_size, distr="pareto", method="mle")
+burst_size_yak_pareto <- mtx_uniques(all_burst_size_yak, common_genes)
+burst_size_yak_pareto[, 4:11] <- pareto_mtx(burst_size_yak_pareto[,4:11], fit.gamma_yak_size$estimate["shape"], fit.gamma_yak_size$estimate["scale"])
 
+burst_size_ana_pareto <- mtx_uniques(all_burst_size_ana, common_genes)
+dist_ana_size <- unlist(burst_size_ana_pareto[,4:11])
+dist_ana_size <- dist_ana_size[dist_ana_size >= 1]
+fit.gamma_ana_size <- fitdist(dist_ana_size, distr="pareto", method="mle")
+burst_size_ana_pareto <- mtx_uniques(all_burst_size_ana, common_genes)
+burst_size_ana_pareto[, 4:11] <- pareto_mtx(burst_size_ana_pareto[,4:11], fit.gamma_ana_size$estimate["shape"], fit.gamma_ana_size$estimate["scale"])
+
+burst_freq_mel_pareto <- mtx_uniques(all_burst_freq_mel, common_genes)
+dist_mel_freq <- unlist(burst_freq_mel_pareto[,4:11])
+dist_mel_freq <- dist_mel_freq[dist_mel_freq >= 1]
+fit.gamma_mel_freq <- fitdist(dist_mel_freq, distr="pareto", method="mle")
+burst_freq_mel_pareto[, 4:11] <- pareto_mtx(burst_freq_mel_pareto[,4:11], fit.gamma_mel_freq$estimate["shape"], fit.gamma_mel_freq$estimate["scale"])
+
+burst_freq_yak_pareto <- mtx_uniques(all_burst_freq_yak, common_genes)
+dist_yak_freq <- unlist(burst_freq_yak_pareto[,4:11])
+dist_yak_freq <- dist_yak_freq[dist_yak_freq >= 1]
+fit.gamma_yak_freq <- fitdist(dist_yak_freq, distr="pareto", method="mle")
+burst_freq_yak_pareto <- mtx_uniques(all_burst_freq_yak, common_genes)
+burst_freq_yak_pareto[, 4:11] <- pareto_mtx(burst_freq_yak_pareto[,4:11], fit.gamma_yak_freq$estimate["shape"], fit.gamma_yak_freq$estimate["scale"])
+
+burst_freq_ana_pareto <- mtx_uniques(all_burst_freq_ana, common_genes)
+dist_ana_freq <- unlist(burst_freq_ana_pareto[,4:11])
+dist_ana_freq <- dist_ana_freq[dist_ana_freq >= 1]
+fit.gamma_ana_freq <- fitdist(dist_ana_freq, distr="pareto", method="mle")
+burst_freq_ana_pareto <- mtx_uniques(all_burst_freq_ana, common_genes)
+burst_freq_ana_pareto[, 4:11] <- pareto_mtx(burst_freq_ana_pareto[,4:11], fit.gamma_ana_freq$estimate["shape"], fit.gamma_ana_freq$estimate["scale"])
+
+
+png("sc_liftoff/pareto_mel_size.png", width=2400, height=2400, res=600, pointsize=3)
+plot(fit.gamma_mel_size)
+dev.off()
+
+png("sc_liftoff/pareto_yak_size.png", width=2400, height=2400, res=600, pointsize=3)
+plot(fit.gamma_yak_size)
+dev.off()
+
+png("sc_liftoff/pareto_ana_size.png", width=2400, height=2400, res=600, pointsize=3)
+plot(fit.gamma_ana_size)
+dev.off()
+
+png("sc_liftoff/pareto_mel_freq.png", width=2400, height=2400, res=600, pointsize=3)
+plot(fit.gamma_mel_freq)
+dev.off()
+
+png("sc_liftoff/pareto_yak_freq.png", width=2400, height=2400, res=600, pointsize=3)
+plot(fit.gamma_yak_freq)
+dev.off()
+
+png("sc_liftoff/pareto_ana_freq.png", width=2400, height=2400, res=600, pointsize=3)
+plot(fit.gamma_ana_freq)
+dev.off()
+
+
+
+delta_dist <- function(x, y){
+	out <- x
+
+	for(i in 1:ncol(x)){
+		out[,i] <- y[,i] - x[,i]
+		
+		idx <- unlist(apply(cbind(y[,i], x[,i]), 1, function(m) return(sum(m == 0) > 0)))
+		out[idx,i] <- 0
+	}
+	
+	return(out)
+}
+
+burst_size_diff_meya <- burst_size_mel_pareto
+burst_size_diff_mean <- burst_size_mel_pareto
+burst_freq_diff_meya <- burst_freq_mel_pareto
+burst_freq_diff_mean <- burst_freq_mel_pareto
+
+burst_size_diff_meya[,4:11] <- delta_dist(burst_size_yak_pareto[,4:11], burst_size_mel_pareto[,4:11]) 
+burst_size_diff_mean[,4:11] <- delta_dist(burst_size_ana_pareto[,4:11], burst_size_mel_pareto[,4:11])
+ 
+burst_freq_diff_meya[,4:11] <- delta_dist(burst_freq_yak_pareto[,4:11], burst_freq_mel_pareto[,4:11]) 
+burst_freq_diff_mean[,4:11] <- delta_dist(burst_freq_ana_pareto[,4:11], burst_freq_mel_pareto[,4:11])
+
+
+obs_genes <- intersect(which(rowSums(burst_size_diff_meya[,4:11]) > 0), which(rowSums(burst_size_diff_mean[,4:11]) > 0))
+all_dnt <- unique(unlist(dnt_dat_plus[,c("nei_L2_sym_mel","nei_L1_sym_mel", "nei_R1_sym_mel", "nei_R2_sym_mel")]))
+obs_dnt <- intersect(burst_size_diff_mean[obs_genes,1], all_dnt)
+
+#621 all neighbors, down to 36 that have observations in all 3 spec.
+
+dnt_size_diff_mean <- burst_size_diff_mean[match(obs_dnt, burst_size_diff_mean[,1]),]
+
+all_size_diff_mean_noz_list <- list(burst_size_diff_mean[,c(1,4)], burst_size_diff_mean[,c(1,5)], burst_size_diff_mean[,c(1,6)], burst_size_diff_mean[,c(1,7)], burst_size_diff_mean[,c(1,8)], burst_size_diff_mean[,c(1,9)], burst_size_diff_mean[,c(1,10)], burst_size_diff_mean[,c(1,11)])
+
+all_size_diff_mean_noz_list <- lapply(all_size_diff_mean_noz_list, function(x) x[which(!x[,2] == 0),])
+names(all_size_diff_mean_noz_list) <- colnames(burst_freq_diff_mean)[4:11]
+
+all_size_diff_mean_noz_all <- unlist(lapply(all_size_diff_mean_noz_list, function(x) x[,2]))
+
+dnt_size_diff_mean_noz_list <- list(dnt_size_diff_mean[,c(1,4)], dnt_size_diff_mean[,c(1,5)], dnt_size_diff_mean[,c(1,6)], dnt_size_diff_mean[,c(1,7)], dnt_size_diff_mean[,c(1,8)], dnt_size_diff_mean[,c(1,9)], dnt_size_diff_mean[,c(1,10)], dnt_size_diff_mean[,c(1,11)])
+ 
+dnt_size_diff_mean_noz_list <- lapply(dnt_size_diff_mean_noz_list, function(x) x[which(!x[,2] == 0),])
+names(dnt_size_diff_mean_noz_list) <- colnames(burst_freq_diff_mean)[4:11]
+
+dnt_size_diff_mean_noz_all <- unlist(lapply(all_size_diff_mean_noz_list, function(x) x[,2]))
+
+n_ana_all <- length(unique(unlist(lapply(all_size_diff_mean_noz_list, function(x) x[,1]))))
+n_ana_dnt <- length(unique(unlist(lapply(dnt_size_diff_mean_noz_list, function(x) x[,1]))))
+
+for(i in (1:8)[-c(4, 7)]) print(c(names(dnt_size_diff_mean_noz_list)[i], t.test(dnt_size_diff_mean_noz_list[[i]][,2], all_size_diff_mean_noz_list[[i]][, 2])$p.value))
+
+png("sc_liftoff/test.png", width=2400, height=2400, res=600, pointsize=3)
+# hist(dnt_size_diff_mean_noz_list[[2]][,2], freq=F, col=rgb(1, 0, 0, 1/4), xlim=c(-1,1), breaks=seq(-1, 1, length.out=40))
+# hist(all_size_diff_mean_noz_list[[2]][,2], freq=F, col=rgb(0, 0, 1, 1/4), xlim=c(-1,1), breaks=seq(-1, 1, length.out=40), add=T)
+hist(all_size_diff_mean_noz_all, freq=F, breaks=100)
+dev.off()
+
+png("sc_liftoff/all_size_diff_mean.png", width=2400, height=2400, res=800, pointsize=3)
+# hist(dnt_size_diff_mean_noz_list[[2]][,2], freq=F, col=rgb(1, 0, 0, 1/4), xlim=c(-1,1), breaks=seq(-1, 1, length.out=40))
+# hist(all_size_diff_mean_noz_list[[2]][,2], freq=F, col=rgb(0, 0, 1, 1/4), xlim=c(-1,1), breaks=seq(-1, 1, length.out=40), add=T)
+hist(all_size_diff_mean_noz_all, freq=F, breaks=seq(min(all_size_diff_mean_noz_all), max(all_size_diff_mean_noz_all), length.out=400), main="Difference in Burst Size (mel-ana)", xlab="Parameter Difference (mel-ana)", xlim=c(-25, 100), cex.lab=1.5, cex.main=1.5)
+hist(all_size_diff_mean_noz_all, freq=F, breaks=seq(min(all_size_diff_mean_noz_all), max(all_size_diff_mean_noz_all), length.out=400), main="Difference in Burst Size (mel-ana)", xlab="Parameter Difference (mel-ana)", xlim=c(-25, 100), cex.lab=1.5, cex.main=1.5)
+abline(v=sort(all_size_diff_mean_noz_all)[floor(length(all_size_diff_mean_noz_all)*0.05)], lwd=0.5, lty=2)
+abline(v=sort(all_size_diff_mean_noz_all)[floor(length(all_size_diff_mean_noz_all)*0.95)], lwd=0.5, lty=2)
 dev.off()
 
 
 
 
+dnt_size_diff_meya <- burst_size_diff_meya[match(obs_dnt, burst_size_diff_meya[,1]),]
 
-save(list=ls(), file="sc_liftoff/bursting/wrkspce.rdata")
+all_size_diff_meya_noz_list <- list(burst_size_diff_meya[,c(1,4)], burst_size_diff_meya[,c(1,5)], burst_size_diff_meya[,c(1,6)], burst_size_diff_meya[,c(1,7)], burst_size_diff_meya[,c(1,8)], burst_size_diff_meya[,c(1,9)], burst_size_diff_meya[,c(1,10)], burst_size_diff_meya[,c(1,11)])
+
+all_size_diff_meya_noz_list <- lapply(all_size_diff_meya_noz_list, function(x) x[which(!x[,2] == 0),])
+names(all_size_diff_meya_noz_list) <- colnames(burst_freq_diff_meya)[4:11]
+
+all_size_diff_meya_noz_all <- unlist(lapply(all_size_diff_meya_noz_list, function(x) x[,2]))
+
+dnt_size_diff_meya_noz_list <- list(dnt_size_diff_meya[,c(1,4)], dnt_size_diff_meya[,c(1,5)], dnt_size_diff_meya[,c(1,6)], dnt_size_diff_meya[,c(1,7)], dnt_size_diff_meya[,c(1,8)], dnt_size_diff_meya[,c(1,9)], dnt_size_diff_meya[,c(1,10)], dnt_size_diff_meya[,c(1,11)])
+ 
+dnt_size_diff_meya_noz_list <- lapply(dnt_size_diff_meya_noz_list, function(x) x[which(!x[,2] == 0),])
+names(dnt_size_diff_meya_noz_list) <- colnames(burst_freq_diff_meya)[4:11]
+
+n_yak_all <- length(unique(unlist(lapply(all_size_diff_meya_noz_list, function(x) x[,1]))))
+n_yak_dnt <- length(unique(unlist(lapply(dnt_size_diff_meya_noz_list, function(x) x[,1]))))
+
+for(i in (1:8)) print(c(names(dnt_size_diff_meya_noz_list)[i], t.test(dnt_size_diff_meya_noz_list[[i]][,2], all_size_diff_meya_noz_list[[i]][, 2])$p.value))
+
+png("sc_liftoff/test1.png", width=2400, height=2400, res=600, pointsize=3)
+hist(dnt_size_diff_meya_noz_list[[3]][,2], freq=F, col=rgb(1, 0, 0, 1/4), xlim=c(-1,1), breaks=seq(-1, 1, length.out=40))
+hist(all_size_diff_meya_noz_list[[3]][,2], freq=F, col=rgb(0, 0, 1, 1/4), xlim=c(-1,1), breaks=seq(-1, 1, length.out=40), add=T)
+dev.off()
+
+png("sc_liftoff/all_size_diff_meya.png", width=2400, height=2400, res=800, pointsize=3)
+# hist(dnt_size_diff_meya_noz_list[[2]][,2], freq=F, col=rgb(1, 0, 0, 1/4), xlim=c(-1,1), breaks=seq(-1, 1, length.out=40))
+# hist(all_size_diff_meya_noz_list[[2]][,2], freq=F, col=rgb(0, 0, 1, 1/4), xlim=c(-1,1), breaks=seq(-1, 1, length.out=40), add=T)
+hist(all_size_diff_meya_noz_all, freq=F, seq(min(all_size_diff_meya_noz_all), max(all_size_diff_meya_noz_all), length.out=400), main="Difference in Burst Size (mel-yak)", xlab="Parameter Difference (mel-yak)", xlim=c(-175, 50), cex.lab=1.5, cex.main=1.5)
+hist(all_size_diff_meya_noz_all, freq=F, seq(min(all_size_diff_meya_noz_all), max(all_size_diff_meya_noz_all), length.out=400), main="Difference in Burst Size (mel-yak)", xlab="Parameter Difference (mel-yak)", xlim=c(-175, 50), cex.lab=1.5, cex.main=1.5)
+abline(v=sort(all_size_diff_meya_noz_all)[floor(length(all_size_diff_meya_noz_all)*0.05)], lwd=0.5, lty=2)
+abline(v=sort(all_size_diff_meya_noz_all)[floor(length(all_size_diff_meya_noz_all)*0.95)], lwd=0.5, lty=2)
+dev.off()
+
+
+
+dist_list <- lapply(list(unname(dnt_dat_plus[,c(6, 10, 11,1,2)]), unname(dnt_dat_plus[,c(12, 16, 17,1,2)]), unname(dnt_dat_plus[,c(18, 22, 23, 1,2)]), unname(dnt_dat_plus[,c(24, 28, 29, 1,2)])), function(x) return(x[x[,2] > 0,]))
+ 
+dist_list_mtx <- data.frame(genes=c(dist_list[[1]][,1], dist_list[[2]][,1], dist_list[[3]][,1],dist_list[[4]][,1]), dist=as.numeric(c(dist_list[[1]][,2], dist_list[[2]][,2], dist_list[[3]][,2], dist_list[[4]][,2])), syn=c(dist_list[[1]][,3], dist_list[[2]][,3], dist_list[[3]][,3],dist_list[[4]][,3]),origin=c(dist_list[[1]][,4], dist_list[[2]][,4], dist_list[[3]][,4],dist_list[[4]][,4]), dnt=c(dist_list[[1]][,5], dist_list[[2]][,5], dist_list[[3]][,5],dist_list[[4]][,5]))
+
+dnt_size_diff_mean_noz_list_indist <- lapply(dnt_size_diff_mean_noz_list, function(x){
+	if(length(x) <= 1) return(x)
+	return(x[which(x[,1] %in% dist_list_mtx[,1]),])})
+
+dnt_size_diff_mean_noz_list_alldist <- lapply(dnt_size_diff_mean_noz_list_indist, function(x) unlist(lapply(x[,1], function(y) min(dist_list_mtx[which(dist_list_mtx[,1] == y),2]))))
+
+dnt_size_diff_mean_noz_list_syndist <- lapply(dnt_size_diff_mean_noz_list_indist, function(x) unlist(lapply(x[,1], function(y) dist_list_mtx[which(dist_list_mtx[,1] == y),3])))
+
+dnt_size_diff_mean_noz_list_oridist <- lapply(dnt_size_diff_mean_noz_list_indist, function(x) unlist(lapply(x[,1], function(y) dist_list_mtx[which(dist_list_mtx[,1] == y),4])))
+
+dnt_size_diff_mean_noz_list_dntdist <- lapply(dnt_size_diff_mean_noz_list_indist, function(x) unlist(lapply(x[,1], function(y) dist_list_mtx[which(dist_list_mtx[,1] == y),5])))
+
+dnt_size_diff_mean_combined <- data.frame(deltap=unlist(lapply(dnt_size_diff_mean_noz_list_indist, function(x) return(x[,2]))), dist=unlist(dnt_size_diff_mean_noz_list_alldist), syn=unlist(dnt_size_diff_mean_noz_list_syndist), origin=unlist(dnt_size_diff_mean_noz_list_oridist), dnt=unlist(dnt_size_diff_mean_noz_list_dntdist))
+
+idx_inc <- dnt_size_diff_mean_combined[,3] %in% c("tdn", "div")
+
+temp2 <- dnt_size_diff_mean_combined[,2] < 40000
+temp2 <- intersect(which(temp2), which(dnt_size_diff_mean_combined[,1] < 200))
+
+png("sc_liftoff/dnt_size_diff_dist_mean.png", width=2400, height=2400, res=800, pointsize=4.5)
+plot(dnt_size_diff_mean_combined[temp2,2], dnt_size_diff_mean_combined[temp2,1], xlab="Distance to de novo transcript (in mel)", ylab="Difference in Burst Size (mel-ana)", main="Genes neighboring de novo transcripts (ananassae)", cex.lab=1.5, cex.main=1.5, ylim=c(-25, 100))
+abline(h=sort(all_size_diff_mean_noz_all)[floor(length(all_size_diff_mean_noz_all)*0.05)], lwd=0.5, lty=2)
+abline(h=sort(all_size_diff_mean_noz_all)[floor(length(all_size_diff_mean_noz_all)*0.95)], lwd=0.5, lty=2)
+dev.off()
+
+
+dnt_size_diff_meya_noz_list_indist <- lapply(dnt_size_diff_meya_noz_list, function(x){
+	if(length(x) <= 1) return(x)
+	return(x[which(x[,1] %in% dist_list_mtx[,1]),])})
+
+dnt_size_diff_meya_noz_list_alldist <- lapply(dnt_size_diff_meya_noz_list_indist, function(x) unlist(lapply(x[,1], function(y) min(dist_list_mtx[which(dist_list_mtx[,1] == y),2]))))
+
+dnt_size_diff_meya_noz_list_syndist <- lapply(dnt_size_diff_meya_noz_list_indist, function(x) unlist(lapply(x[,1], function(y) dist_list_mtx[which(dist_list_mtx[,1] == y),3])))
+
+dnt_size_diff_meya_noz_list_oridist <- lapply(dnt_size_diff_meya_noz_list_indist, function(x) unlist(lapply(x[,1], function(y) dist_list_mtx[which(dist_list_mtx[,1] == y),4])))
+
+dnt_size_diff_meya_noz_list_dntdist <- lapply(dnt_size_diff_meya_noz_list_indist, function(x) unlist(lapply(x[,1], function(y) dist_list_mtx[which(dist_list_mtx[,1] == y),5])))
+
+dnt_size_diff_meya_combined <- data.frame(deltap=unlist(lapply(dnt_size_diff_meya_noz_list_indist, function(x) return(x[,2]))), dist=unlist(dnt_size_diff_meya_noz_list_alldist), syn=unlist(dnt_size_diff_meya_noz_list_syndist), origin=unlist(dnt_size_diff_meya_noz_list_oridist), dnt=unlist(dnt_size_diff_meya_noz_list_dntdist))
+
+idx_inc <- dnt_size_diff_meya_combined[,3] %in% c("tdn", "div")
+
+temp3 <- dnt_size_diff_meya_combined[,2] < 40000
+temp3 <- intersect(which(temp3), which(dnt_size_diff_meya_combined[,1] < 200))
+temp3 <- intersect(temp3, which(dnt_size_diff_meya_combined[,4] %in% c("000001", "000111")))
+
+png("sc_liftoff/dnt_size_diff_dist_meya.png", width=2400, height=2400, res=800, pointsize=4.5)
+plot(dnt_size_diff_meya_combined[temp3,2], dnt_size_diff_meya_combined[temp3,1], xlab="Distance to de novo transcript (in mel)", ylab="Difference in Burst Size (mel-yak)", main="Genes neighboring de novo transcripts (yakuba)", cex.lab=1.5, cex.main=1.5, ylim=c(-175, 50))
+abline(h=sort(all_size_diff_meya_noz_all)[floor(length(all_size_diff_meya_noz_all)*0.05)], lwd=0.5, lty=2)
+abline(h=sort(all_size_diff_meya_noz_all)[floor(length(all_size_diff_meya_noz_all)*0.95)], lwd=0.5, lty=2)
+dev.off()
+
+
+
+temp <- dnt_size_diff_meya_combined[,4] %in% c("000001", "000111")
+temp1 <- intersect(temp, temp3)
+
+
+
+
+
+
+temp1 <- unlist(lapply(temp5[,1], function(x) min(temp[which(temp[,1] == x),2])))
+ 
+temp2 <- which(!temp5[,"Early_spermatocyte"] == 0 )
+  
+png("sc_liftoff/test1.png", width=2400, height=2400, res=600, pointsize=3)
+plot(temp1[temp2], temp5[temp2,"Early_spermatocyte"])
+dev.off()
+
+# save(list=ls(), file="sc_liftoff/bursting/wrkspce.rdata"))
 
 # svgo -f raw_svg/ -o raw_svg_svgo
